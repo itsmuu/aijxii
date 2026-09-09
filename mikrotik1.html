@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul Terintegrasi: Konfigurasi Lengkap MikroTik RouterOS</title>
+    <!-- Dynamic Navbar Component -->
+    <script src="navbar.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-blue: #0284c7;
+            --accent-blue-bg: #e0f2fe;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 24px 16px;
+            background-color: var(--bg-body);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .module-header {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background-color: var(--accent-blue-bg);
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .module-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .module-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .section-box {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Teori Items */
+        .theory-item {
+            margin-bottom: 20px;
+        }
+
+        .theory-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .theory-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+            margin-top: 0;
+        }
+
+        .theory-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0 0 8px 0;
+        }
+
+        .theory-item ul {
+            margin: 8px 0 0 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Langkah Kerja Cards */
+        .step-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .step-list {
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .sub-step-list {
+            margin: 6px 0 6px 18px;
+            list-style-type: disc;
+        }
+
+        /* UI Badges & Formatting */
+        .ui-path {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .note-callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+
+        .note-callout ul {
+            margin: 6px 0 0 18px;
+            padding: 0;
+        }
+
+        .success-callout {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #166534;
+            margin-top: 16px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px 0;
+            color: #64748b;
+            font-size: 13px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        .heart {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Otomatis dari navbar.js -->
+    <app-navbar></app-navbar>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-container">
+            
+            <!-- Header Modul Gabungan -->
+            <div class="module-header">
+                <span class="module-badge">Modul Terintegrasi</span>
+                <h1 class="module-title">Modul Lengkap Konfigurasi MikroTik RouterOS</h1>
+                <p class="module-desc">
+                    Modul komprehensif ini menggabungkan seluruh tahapan konfigurasi RouterOS secara runtut dari awal hingga akhir, meliputi Konfigurasi Dasar MikroTik, Konfigurasi Internet WAN (ether3) & Routing Default, Konfigurasi IP LAN (ether4), DHCP Server & Hotspot, hingga Firewall Filter Rules, Pemblokiran File & Pemblokiran Web.
+                </p>
+            </div>
+
+            <!-- BAGIAN A: LANDASAN TEORI -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    A. Landasan Teori
+                </h2>
+
+                <div class="theory-item">
+                    <h4>1. Konfigurasi Dasar MikroTik RouterOS & WinBox</h4>
+                    <p>
+                        MikroTik RouterOS adalah sistem operasi berbasis Linux yang dirancang khusus untuk menjadikan komputer atau perangkat keras <em>RouterBOARD</em> berfungsi sebagai router jaringan yang andal. Manajemen router umumnya dilakukan menggunakan <strong>WinBox</strong>, aplikasi GUI yang memungkinkan konfigurasi visual via MAC/IP Address. Pengaturan dasar mencakup penentuan <strong>Identity Router</strong> agar mudah diidentifikasi, pengubahan <strong>Password Account</strong> untuk keamanan dasar, konfigurasi <strong>DNS Server</strong> (termasuk <em>Allow Remote Requests</em> sebagai DNS Forwarder/Cache LAN), dan sinkronisasi waktu otomatis melalui <strong>NTP Client (SNTP)</strong>.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>2. Konfigurasi Internet WAN (ether3), Routing Default & NAT</h4>
+                    <p>
+                        Penghubungan router ke jaringan internet pada interface WAN (ether3) memanfaatkan <strong>DHCP Client</strong> untuk mendapatkan IP address, subnet mask, default gateway, dan DNS server secara otomatis dari ISP. Rute default (<code>0.0.0.0/0</code>) secara dinamis mengarahkan lalu lintas tak dikenal ke gateway ISP. Selain itu, aturan <strong>NAT (Network Address Translation) Masquerade</strong> diaktifkan untuk menerjemahkan alamat IP privat lokal menjadi IP publik saat berkomunikasi ke internet.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>3. Konfigurasi IP LAN, IP Pool, DHCP Server & Hotspot Gateway</h4>
+                    <p>
+                        Pengalamatan jaringan lokal (ether4) dikelola dengan menentukan IP Address static gateway, lalu mengatur <strong>IP Pool</strong> sebagai rentang alokasi IP yang akan didistribusikan oleh <strong>DHCP Server</strong> kepada klien secara otomatis. Untuk otentikasi berbasis captive portal, <strong>Hotspot Gateway</strong> diaktifkan. Melalui <strong>User Profiles</strong>, administrator dapat membatasi hak akses serta kecepatan bandwidth unggah/unduh (<em>Rate Limit rx/tx</em>) untuk grup pengguna tertentu (misalnya Guru dan Siswa).
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>4. Firewall Filter Rules, Pemblokiran File & Web</h4>
+                    <p>
+                        Firewall Filter memeriksa setiap paket data berdasarkan titik pemeriksaannya:
+                    </p>
+                    <ul>
+                        <li><strong>Chain Input:</strong> Menangani paket data yang ditujukan langsung ke router (contoh: ping ICMP dari klien ke IP Gateway router).</li>
+                        <li><strong>Chain Forward:</strong> Menangani paket data yang melintasi router dari satu segmen/klien menuju segmen/klien lain atau ke internet.</li>
+                    </ul>
+                    <p>
+                        Untuk keamanan dan manajemen lalu lintas, dilakukan pemblokiran paket <strong>ICMP (Ping)</strong>, pemblokiran unduhan file (<code>.mp3</code>), serta pemblokiran situs web (contoh: <code>tkjapps.smksabdev.my.id</code>) menggunakan kombinasi metode <strong>TLS Host</strong>, <strong>Layer7 Protocol (Regexp)</strong>, <strong>Firewall Content</strong>, dan <strong>Web Proxy Access</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BAGIAN B: LANGKAH KERJA KONFIGURASI -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    B. Langkah Kerja Konfigurasi Runtut (1–11)
+                </h2>
+
+                <div class="note-callout">
+                    <strong>PETUNJUK UMUM:</strong>
+                    <ul>
+                        <li><strong>Persiapan:</strong> Hubungkan kabel UTP dari Port Ethernet PC ke port <strong>ether2</strong> pada RouterBOARD. Buka WinBox, pilih MAC Address router di tab <em>Neighbors</em>, lalu klik <strong>Connect</strong>.</li>
+                        <li><strong>Ketentuan Variable IP:</strong> Ganti variabel <span class="ui-path">xx</span> pada seluruh IP Address dengan <strong>Nomor Absen Siswa</strong>. (Contoh: Absen 05 → <span class="value-badge">172.32.5.1/24</span>).</li>
+                    </ul>
+                </div>
+
+                <!-- Tahap 1: Konfigurasi Dasar -->
+                <!-- Langkah 1 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 1: Mengganti Identity Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → Identity</span>.</li>
+                        <li>Pada kolom <strong>Name</strong>, ketik identitas baru: <span class="value-badge">Router-NamaSiswa</span> (Contoh: <span class="value-badge">Router-Budi</span>).</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                        <li>Amati perubahan nama router pada bagian title bar aplikasi WinBox.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 2 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 2: Mengubah Password Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → Password</span>.</li>
+                        <li>Biarkan kolom <strong>Old Password</strong> kosong (jika default).</li>
+                        <li>Isi kolom <strong>New Password</strong> dan <strong>Confirm Password</strong> dengan password baru.</li>
+                        <li>Klik tombol <strong>Change</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 3 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 3: Konfigurasi DNS Server</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → DNS</span>.</li>
+                        <li>Pada kolom <strong>Servers</strong>, klik panah bawah, tambahkan DNS Static: <span class="value-badge">103.172.172.4</span>.</li>
+                        <li>Centang opsi <strong>Allow Remote Requests</strong>.</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 4 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 4: Konfigurasi NTP Client (Sinkronisasi Waktu)</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → NTP Client</span> (atau <span class="ui-path">SNTP Client</span>).</li>
+                        <li>Berikan centang pada opsi <strong>Enabled</strong>.</li>
+                        <li>Isi kolom <strong>Server DNS Names</strong>: <span class="value-badge">time.windows.com</span>.</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                        <li>Pastikan status berubah menjadi <em>synchronized</em> dan waktu router terupdate secara otomatis.</li>
+                    </ol>
+                </div>
+
+                <!-- Tahap 2: Konfigurasi Internet & NAT -->
+                <!-- Langkah 5A -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5A: Konfigurasi DHCP Client pada ether3 (Koneksi Internet)</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → DHCP Client</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Pada jendela yang muncul, isi konfigurasi berikut:
+                            <ul class="sub-step-list">
+                                <li><strong>Interface</strong>: Pilih <span class="ui-path">ether3</span> (interface yang terhubung ke modem/ISP).</li>
+                                <li><strong>Use Peer DNS</strong>: <span class="value-badge">✓ Centang</span> (agar DNS dari ISP otomatis digunakan).</li>
+                                <li><strong>Add Default Route</strong>: <span class="value-badge">✓ Centang</span> (agar gateway default otomatis ditambahkan ke routing).</li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>OK</strong> untuk menyimpan konfigurasi.</li>
+                        <li>Tunggu beberapa saat hingga status berubah menjadi <span class="value-badge">bound</span> (berhasil mendapatkan IP dari ISP).</li>
+                    </ol>
+                    <div class="success-callout">
+                        <strong>✓ INDIKASI BERHASIL:</strong> Pada daftar DHCP Client, akan muncul IP Address, Gateway, dan DNS Server yang diberikan oleh ISP secara otomatis.
+                    </div>
+                </div>
+
+                <!-- Langkah 5B -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5B: Verifikasi Default Route</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Routes</span> untuk memverifikasi rute default.</li>
+                        <li>Pastikan terdapat entri otomatis dengan <strong>Dst. Address</strong>: <span class="value-badge">0.0.0.0/0</span> dan <strong>Gateway</strong> yang terisi IP Gateway dari ISP via <span class="ui-path">ether3</span>.</li>
+                        <li>Perhatikan flag di sebelah kiri entri tersebut bertuliskan <span class="ui-path">DA</span> atau <span class="ui-path">DAS</span> (<strong>D</strong>ynamic <strong>A</strong>ctive <strong>S</strong>tatic / <strong>D</strong>ynamic <strong>A</strong>ctive), menandakan rute aktif secara dinamis.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 5C -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5C: Konfigurasi NAT Masquerade</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → NAT</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Pada tab <strong>General</strong>, isi:
+                            <ul class="sub-step-list">
+                                <li><strong>Chain</strong>: <span class="ui-path">srcnat</span></li>
+                                <li><strong>Out. Interface</strong>: <span class="ui-path">ether3</span> (interface WAN yang terhubung ke internet)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Pada tab <strong>Action</strong>, isi:
+                            <ul class="sub-step-list">
+                                <li><strong>Action</strong>: <span class="ui-path">masquerade</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>OK</strong> untuk menyimpan aturan NAT.</li>
+                    </ol>
+                    <div class="success-callout">
+                        <strong>✓ SELESAI:</strong> Router sekarang telah terhubung ke internet secara dinamis melalui DHCP Client pada ether3 dan siap meneruskan koneksi internet ke jaringan lokal.
+                    </div>
+                </div>
+
+                <!-- Tahap 3: Konfigurasi IP LAN, DHCP Server & Hotspot -->
+                <!-- Langkah 6 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 6: Konfigurasi IP LAN (ether4) & DHCP Server</div>
+                    <ol class="step-list">
+                        <li><strong>IP Address LAN:</strong> Buka <span class="ui-path">IP → Addresses</span> → Klik <strong>+</strong>. Isi <strong>Address</strong>: <span class="value-badge">172.32.xx.1/24</span> | <strong>Interface</strong>: <span class="ui-path">ether4</span> → <strong>OK</strong>.</li>
+                        <li><strong>IP Pool:</strong> Buka <span class="ui-path">IP → Pool</span> → Klik <strong>+</strong>. Isi <strong>Name</strong>: <span class="value-badge">dhcp-pool-lan</span> | <strong>Addresses</strong>: <span class="value-badge">172.32.xx.21-172.32.xx.70</span> → <strong>OK</strong>.</li>
+                        <li>
+                            <strong>DHCP Setup:</strong> Buka <span class="ui-path">IP → DHCP Server</span> → Klik <strong>DHCP Setup</strong>.
+                            <ul class="sub-step-list">
+                                <li>Select Interface: <span class="ui-path">ether4</span> → DHCP Address Space: <span class="value-badge">172.32.xx.0/24</span> → Gateway: <span class="value-badge">172.32.xx.1</span>.</li>
+                                <li>Addresses to Give Out: <span class="value-badge">172.32.xx.21-172.32.xx.70</span> → DNS: <span class="value-badge">172.32.xx.1</span> → Klik <strong>Next</strong> hingga selesai.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 7 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 7: Konfigurasi Hotspot & User Profiles</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Hotspot Setup:</strong> Buka <span class="ui-path">IP → Hotspot → Servers</span> → Klik <strong>Hotspot Setup</strong>.
+                            <ul class="sub-step-list">
+                                <li>Interface: <span class="ui-path">ether4</span> | Local Address: <span class="value-badge">172.32.xx.1/24</span> | Pool: <span class="value-badge">dhcp-pool-lan</span>.</li>
+                                <li>Certificate: <span class="ui-path">none</span> | SMTP: <span class="value-badge">0.0.0.0</span> | DNS Server: <span class="value-badge">172.32.xx.1</span> | DNS Name: <span class="value-badge">wifi-namasiswa.com</span> → <strong>Next</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>User Profiles:</strong> Buka tab <span class="ui-path">User Profiles</span> → Klik <strong>+</strong>:
+                            <ul class="sub-step-list">
+                                <li>Guru: Name: <span class="value-badge">profile-guru</span> | Rate Limit (rx/tx): <span class="value-badge">10M/10M</span> → <strong>OK</strong>.</li>
+                                <li>Siswa: Name: <span class="value-badge">profile-siswa</span> | Rate Limit (rx/tx): <span class="value-badge">5M/5M</span> → <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Users Hotspot:</strong> Buka tab <span class="ui-path">Users</span> → Klik <strong>+</strong>:
+                            <ul class="sub-step-list">
+                                <li>Akun Guru: Name: <span class="value-badge">guru</span> | Pass: <span class="value-badge">guru</span> | Profile: <span class="value-badge">profile-guru</span> → <strong>OK</strong>.</li>
+                                <li>Akun Siswa: Name: <span class="value-badge">siswa</span> | Pass: <span class="value-badge">siswa</span> | Profile: <span class="value-badge">profile-siswa</span> → <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Tahap 4: Firewall Filter Rules & Pemblokiran -->
+                <!-- Langkah 8 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 8: Firewall - Blokir Ping DHCP Pool ke Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Tab <strong>General</strong>:
+                            <ul class="sub-step-list">
+                                <li>Chain: <span class="ui-path">input</span></li>
+                                <li>Src. Address: <span class="value-badge">172.32.xx.21-172.32.xx.70</span></li>
+                                <li>Protocol: <span class="ui-path">icmp</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Action</strong>:
+                            <ul class="sub-step-list">
+                                <li>Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 9 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 9: Firewall - Blokir Ping IP Pool 21-30 ke IP 61-70</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Tab <strong>General</strong>:
+                            <ul class="sub-step-list">
+                                <li>Chain: <span class="ui-path">forward</span></li>
+                                <li>Src. Address: <span class="value-badge">172.32.xx.21-172.32.xx.30</span></li>
+                                <li>Dst. Address: <span class="value-badge">172.32.xx.61-172.32.xx.70</span></li>
+                                <li>Protocol: <span class="ui-path">icmp</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Action</strong>:
+                            <ul class="sub-step-list">
+                                <li>Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 10 (Utama) -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 10: Pemblokiran File .mp3 (Metode Utama & Alternatif)</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Metode 1 (Layer7 Protocol - Utama):</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka <span class="ui-path">IP → Firewall → Layer7 Protocols</span> → Klik tombol <strong>+</strong>. Name: <span class="value-badge">block-mp3</span> | Regexp: <span class="value-badge">^.*\.mp3.*$</span> → Klik <strong>OK</strong>.</li>
+                                <li>Buka tab <span class="ui-path">Filter Rules</span> → Klik <strong>+</strong>.</li>
+                                <li>Tab General: Chain: <span class="ui-path">forward</span> | Src. Address: <span class="value-badge">172.32.xx.0/24</span> | Protocol: <span class="ui-path">tcp</span></li>
+                                <li>Tab Advanced: Layer7 Protocol: <span class="ui-path">block-mp3</span></li>
+                                <li>Tab Action: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 2 (Firewall Content - Alternatif):</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Tab General: Chain: <span class="ui-path">forward</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">80</span> | Src. Address: <span class="value-badge">172.32.xx.0/24</span></li>
+                                <li>Tab Advanced: Content: <span class="value-badge">.mp3</span></li>
+                                <li>Tab Action: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 3 (Web Proxy Access - Alternatif):</strong>
+                            <ul class="sub-step-list">
+                                <li>Aktifkan Web Proxy: Buka <span class="ui-path">IP → Web Proxy</span>. Centang <strong>Enabled</strong> | Port: <span class="value-badge">8080</span> | Centang <strong>Anonymous</strong> → Klik <strong>Apply</strong>.</li>
+                                <li>Aturan Blokir: Pada jendela Web Proxy, klik <span class="ui-path">Access</span> → Klik <strong>+</strong>. Path: <span class="value-badge">*.mp3</span> | Action: <span class="ui-path">deny</span> → Klik <strong>OK</strong>.</li>
+                                <li>Redirect HTTP ke Proxy (NAT): Buka <span class="ui-path">IP → Firewall → NAT</span> → Klik <strong>+</strong>. Chain: <span class="ui-path">dstnat</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">80</span> | In. Interface: <span class="ui-path">ether4</span> | Action: <span class="ui-path">redirect</span> | To Ports: <span class="value-badge">8080</span> → Klik <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 11: Pemblokiran Situs Web -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 11: Pemblokiran Situs Web (Contoh: tkjapps.smksabdev.my.id)</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Metode 1: Menggunakan TLS Host (Sangat Ringan & Efektif HTTPS/HTTP)</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">forward</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">443,80</span></li>
+                                <li>Tab <strong>Advanced</strong>: TLS Host: <span class="value-badge">*tkjapps.smksabdev.my.id*</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 2: Menggunakan Layer7 Protocol (Regexp Target Domain)</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka <span class="ui-path">IP → Firewall → Layer7 Protocols</span> → Klik tombol <strong>+</strong>. Name: <span class="value-badge">block-web-tkjapps</span> | Regexp: <span class="value-badge">^.*(tkjapps\.smksabdev\.my\.id).*$</span> → Klik <strong>OK</strong>.</li>
+                                <li>Buka tab <span class="ui-path">Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">forward</span> | Src. Address: <span class="value-badge">172.32.xx.0/24</span> | Protocol: <span class="ui-path">tcp</span></li>
+                                <li>Tab <strong>Advanced</strong>: Layer7 Protocol: <span class="ui-path">block-web-tkjapps</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 3: Menggunakan Web Proxy Access (Untuk Protokol HTTP)</strong>
+                            <ul class="sub-step-list">
+                                <li>Pastikan Web Proxy sudah aktif (seperti pada Langkah 10 Metode 3).</li>
+                                <li>Buka <span class="ui-path">IP → Web Proxy → Access</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Dst. Host: <span class="value-badge">*tkjapps.smksabdev.my.id*</span></li>
+                                <li>Action: <span class="ui-path">deny</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Mugiyono. All Rights Reserved. | Created with <span class="heart">♥</span> for TKJ
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Ujian | STS MikroTik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #102c4f;
+            --blue: #1769aa;
+            --blue-soft: #eaf4ff;
+            --gold: #d9a441;
+            --ink: #172b45;
+            --muted: #718096;
+            --line: #e1e9f2;
+            --canvas: #f5f8fc;
+            --white: #fff;
+            --danger: #c53030;
+            --success: #1f8a5b;
+            --shadow: 0 16px 44px rgba(16, 44, 79, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        .admin-layout { min-height: 100vh; display: grid; grid-template-columns: 260px 1fr; }
+        .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--navy); color: white; padding: 25px 18px; display: flex; flex-direction: column; }
+        .brand { padding: 0 12px 30px; border-bottom: 1px solid rgba(255,255,255,.12); }
+        .brand small { color: #a9c3e0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+        .brand h1 { font-family: Manrope, sans-serif; font-size: 22px; line-height: 1.2; margin: 10px 0 0; }
+        .sidebar-nav { display: grid; gap: 7px; margin-top: 28px; align-content: start; }
+        .nav-button { border: 0; background: transparent; color: #b9cbe0; padding: 13px 14px; border-radius: 10px; text-align: left; font-weight: 600; transition: .2s ease; }
+        .nav-button:hover, .nav-button.active { background: rgba(255,255,255,.11); color: white; }
+        .main-area { padding: 30px clamp(20px, 4vw, 56px); overflow: hidden; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 30px; }
+        .eyebrow { color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        .login-card .eyebrow { text-align: center; }
+        .login-card h1 { text-align: center; }
+        .login-card p { text-align: center; }
+        .admin-logo { display: flex; align-items: center; justify-content: center; margin: 8px 0; }
+        .admin-logo-icon { width: 56px; height: 56px; padding: 12px; border-radius: 16px; background: linear-gradient(135deg, var(--blue), #164d8d); color: white; box-shadow: 0 8px 22px rgba(23, 105, 170, .38); animation: logo-float 3.2s ease-in-out infinite; }
+        @keyframes logo-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .topbar h2 { font-family: Manrope, sans-serif; font-size: clamp(24px, 3vw, 32px); margin: 7px 0 0; }
+        .admin-menu { position: relative; }
+        .admin-menu-btn { display: flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 8px 10px; border-radius: 12px; cursor: pointer; color: var(--muted); font: inherit; transition: background .15s ease; }
+        .admin-menu-btn:hover { background: var(--blue-soft); color: var(--ink); }
+        .admin-menu-btn .avatar-label { font-size: 13px; font-weight: 700; }
+        .admin-menu-btn .chevron { width: 16px; height: 16px; color: var(--muted); transition: transform .2s ease; }
+        .admin-menu-btn[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+        .avatar { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); font-weight: 800; }
+        .admin-dropdown { position: absolute; top: calc(100% + 8px); right: 0; min-width: 220px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 48px rgba(16,44,79,.16); padding: 8px; z-index: 30; }
+        .admin-dropdown[hidden] { display: none; }
+        .dropdown-item { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; padding: 11px 12px; border-radius: 9px; color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .15s ease; }
+        .dropdown-item:hover { background: var(--blue-soft); color: var(--blue); }
+        .dropdown-item svg { width: 17px; height: 17px; flex: none; }
+        .dropdown-divider { height: 1px; background: var(--line); margin: 6px 4px; }
+        .dropdown-item.danger { color: var(--danger); }
+        .dropdown-item.danger:hover { background: #fff1f1; }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .menu-toggle { display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--white); color: var(--blue); align-items: center; justify-content: center; cursor: pointer; transition: .15s ease; }
+        .menu-toggle:hover { background: var(--blue-soft); border-color: rgba(23,105,170,.35); }
+        .menu-toggle svg { width: 21px; height: 21px; }
+        .sidebar-topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .menu-close-btn { display: none; width: 38px; height: 38px; flex: none; border-radius: 10px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #dbe7f4; align-items: center; justify-content: center; cursor: pointer; transition: background .15s ease; }
+        .menu-close-btn:hover { background: rgba(255,255,255,.14); color: white; }
+        .menu-close-btn svg { width: 20px; height: 20px; }
+        .sidebar-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(10,28,50,.52); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity .28s ease, visibility .28s ease; }
+        .sidebar-backdrop.open { opacity: 1; visibility: visible; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 22px; }
+        .stat-card { background: var(--white); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+        .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
+        .stat-icon svg { width: 24px; height: 24px; }
+        .stat-icon.blue { background: var(--blue-soft); color: var(--blue); }
+        .stat-icon.amber { background: #fff6e5; color: #a96b00; }
+        .stat-icon.green { background: #e6f6ee; color: var(--success); }
+        .stat-icon.red { background: #fff1f1; color: var(--danger); }
+        .stat-icon.gray { background: #eef1f5; color: var(--muted); }
+        .stat-label { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+        .stat-value { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 800; line-height: 1.1; }
+        .stat-value small { font-size: 14px; font-weight: 700; color: var(--muted); }
+        .content-card { background: var(--white); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 24px; }
+        @media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+        @media (min-width: 1100px) { .stats-grid { grid-template-columns: repeat(6, 1fr); } }
+        .recap-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .recap-chip { display: inline-flex; align-items: center; gap: 7px; padding: 9px 14px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 13px; font-weight: 700; }
+        .recap-chip strong { font-size: 15px; }
+        .recap-chip.remedial { background: #fff1f1; color: var(--danger); }
+        .content-card { padding: 24px; }
+        .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+        .section-heading h3 { margin: 0; font-family: Manrope, sans-serif; font-size: 19px; }
+        .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+        .primary, .outline, .danger { border-radius: 9px; padding: 11px 15px; border: 1px solid transparent; font-weight: 700; font-size: 13px; }
+        .primary { background: var(--blue); color: white; }
+        .outline { background: white; border-color: var(--line); color: var(--blue); }
+        .danger { background: #fff1f1; border-color: #ffd5d5; color: var(--danger); }
+        .primary:hover, .outline:hover, .danger:hover { transform: translateY(-1px); }
+        .button-row { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px; }
+        td .button-row { flex-wrap: nowrap; justify-content: flex-start; gap: 5px; }
+        .icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: none; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--blue); transition: .15s ease; }
+        .icon-btn:hover { background: var(--blue-soft); color: #0f5a92; }
+        .icon-btn svg { width: 16px; height: 16px; }
+        .icon-btn.icon-danger { color: var(--danger); }
+        .icon-btn.icon-danger:hover { background: #fff1f1; border-color: #ffd5d5; }
+        .search-box { position: relative; margin-bottom: 18px; max-width: 380px; }
+        .search-box .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+        .search-box input { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px 11px 40px; color: var(--ink); outline: 0; font: inherit; }
+        .search-box input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,105,170,.12); }
+        .pagination { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+        .pagination-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .pagination-info { font-size: 13px; font-weight: 600; color: var(--muted); }
+        .pagination .outline { padding: 9px 13px; font-size: 12px; }
+        .pagination .outline:disabled { opacity: .45; cursor: default; transform: none; }
+        .page-size { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #fff; }
+        .size-btn { border: 0; border-right: 1px solid var(--line); background: #fff; color: var(--blue); padding: 9px 13px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .size-btn:last-child { border-right: 0; }
+        .size-btn.active { background: var(--blue); color: #fff; }
+        .size-btn:disabled { opacity: .45; cursor: default; }
+        .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+        table { width: 100%; min-width: 700px; border-collapse: collapse; }
+        th, td { padding: 14px 15px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; }
+        th { background: #f5f8fc; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+        tr:last-child td { border-bottom: 0; }
+        .status { display: inline-flex; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
+        .status.done { background: #e6f6ee; color: var(--success); }
+        .status.waiting { background: #fff6e5; color: #a96b00; }
+        .status.blocked { background: #fff1f1; color: var(--danger); }
+        .score { color: var(--blue); font-weight: 800; }
+        .violation-count { color: var(--danger); font-weight: 800; }
+        .violation-list { display: grid; gap: 10px; }
+        .violation-item { padding: 14px; border: 1px solid #ffdede; border-left: 4px solid var(--danger); border-radius: 10px; background: #fffafa; }
+        .violation-item strong { display: block; margin-bottom: 4px; }
+        .violation-item span { color: var(--muted); font-size: 12px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+        .field { display: grid; gap: 7px; }
+        .field label { color: var(--muted); font-size: 12px; font-weight: 700; }
+        .field input { border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px; color: var(--ink); outline: 0; }
+        .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,105,170,.12); }
+        .key-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 9px; }
+        .key-item { background: var(--blue-soft); border-radius: 8px; padding: 10px; color: var(--blue); font-size: 13px; }
+        #loginView { position: fixed; inset: 0; display: grid; place-items: center; background: linear-gradient(145deg, #edf5ff, #f8fafc); z-index: 5; }
+        #loginView.hidden { display: none; }
+        .login-card { width: min(420px, calc(100% - 32px)); background: white; border: 1px solid var(--line); border-radius: 20px; padding: 32px; box-shadow: var(--shadow); }
+        .login-card h1 { font-family: Manrope, sans-serif; margin: 8px 0; font-size: 27px; }
+        .login-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+        .login-card form { display: grid; gap: 14px; }
+        .login-card input { border: 1px solid var(--line); border-radius: 9px; padding: 13px; }
+        .pw-field { position: relative; display: block; width: 100%; }
+        .pw-field input { width: 100%; box-sizing: border-box; height: 54px; padding: 16px 16px 16px 46px; }
+        .pw-field .pw-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); z-index: 1; display: grid; place-items: center; color: var(--muted); pointer-events: none; transition: color .2s ease; }
+        .pw-field .pw-icon svg { width: 18px; height: 18px; }
+        .pw-field label { position: absolute; left: 44px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted); pointer-events: none; background: white; padding: 0 4px; transition: top .2s ease, transform .2s ease, font-size .2s ease, color .2s ease; }
+        .pw-field input:focus ~ .pw-icon,
+        .pw-field input:not(:placeholder-shown) ~ .pw-icon { color: var(--blue); }
+        .pw-field input:focus ~ label,
+        .pw-field input:not(:placeholder-shown) ~ label { top: 0; transform: translateY(-50%); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--blue); }
+        .login-note { color: var(--muted); font-size: 12px; margin-top: 15px; }
+        .toast { display: none; align-items: center; justify-content: center; gap: 6px; align-self: flex-start; padding: 6px 11px; border-radius: 999px; background: #322f35; color: #f4eff4; font-size: 12px; font-weight: 700; box-shadow: 0 4px 14px rgba(10, 28, 50, .3); }
+        .toast.show { display: inline-flex; animation: toast-in .28s ease; }
+        @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .toast svg { width: 14px; height: 14px; flex: none; color: #e6a23c; }
+        .login-card form a.outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; justify-self: start; border-radius: 999px; padding: 10px 18px; text-decoration: none; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+        .login-card form a.outline svg { width: 16px; height: 16px; flex: none; }
+        .login-card form a.outline:hover { transform: translateY(-1px); border-color: var(--blue); background: var(--blue-soft); }
+        .login-card form .primary { width: 100%; box-sizing: border-box; }
+        .modal-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(10, 28, 50, .54); backdrop-filter: blur(5px); }
+        .modal-backdrop[hidden] { display: none; }
+        .edit-modal { width: min(460px, 100%); padding: 27px; background: white; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 70px rgba(10, 28, 50, .24); }
+        .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+        .modal-header h3 { margin: 0; font-family: Manrope, sans-serif; font-size: 21px; }
+        .modal-header p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .modal-close { width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 9px; background: #f7f9fc; color: var(--muted); font-size: 20px; line-height: 1; }
+        .modal-form { display: grid; gap: 16px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 5px; }
+        .loading-overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(16, 44, 79, .32); backdrop-filter: blur(3px); }
+        .loading-overlay[hidden] { display: none; }
+        .loading-card { display: flex; align-items: center; gap: 13px; min-width: 220px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 18px 50px rgba(16, 44, 79, .2); color: var(--ink); font-size: 14px; font-weight: 700; }
+        .loading-spinner { width: 22px; height: 22px; border: 3px solid #d8e7f6; border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 850px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: 0; bottom: 0; height: 100dvh; width: min(290px, 84vw); transform: translateX(-100%); transition: transform .28s ease; z-index: 40; box-shadow: 0 0 60px rgba(10,28,50,.35); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-nav { grid-template-columns: 1fr; }
+            .menu-toggle { display: inline-flex; }
+            .menu-close-btn { display: inline-flex; }
+            .form-grid { grid-template-columns: 1fr; }
+            .admin-menu-btn .avatar-label { display: none; }
+        }
+        @media (max-width: 520px) { .main-area { padding: 22px 15px 40px; } .topbar, .section-heading { align-items: flex-start; flex-direction: column; } .sidebar-nav { grid-template-columns: 1fr; } .content-card { padding: 17px; } .admin-menu { align-self: flex-end; } }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay" hidden aria-live="polite" aria-busy="true">
+        <div class="loading-card"><span class="loading-spinner" aria-hidden="true"></span><span id="loadingText">Memproses data...</span></div>
+    </div>
+    <section id="loginView">
+        <div class="login-card">
+            <div class="eyebrow">Administrator Access</div>
+            <h1 class="admin-logo" aria-label="Panel Admin Ujian">
+                <svg class="admin-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+            </h1>
+            <p>Kelola peserta, pantau, rekap nilai.</p>
+            <form id="adminLoginForm" novalidate>
+                <div id="adminToast" class="toast" role="status" aria-live="polite">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span class="toast-text">Masukkan password admin</span>
+                </div>
+                <div class="pw-field">
+                    <input id="adminPasswordInput" type="password" placeholder=" " required>
+                    <span class="pw-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                    <label for="adminPasswordInput">Password</label>
+                </div>
+                <button class="primary" type="submit">Masuk ke Dashboard</button>
+                <a href="index.html" class="outline" title="Kembali ke Beranda">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Beranda
+                </a>
+            </form>
+            <div class="login-note">©<a href="https://itsmuu.github.io" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">itsmuu.github.io</a> Ujian Sekolah.</div>
+        </div>
+    </section>
+
+    <div id="editModalBackdrop" class="modal-backdrop" hidden>
+        <section class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+            <div class="modal-header">
+                <div><h3 id="editModalTitle">Edit Data Peserta</h3><p>Perbarui nama dan NIS peserta, lalu simpan perubahan.</p></div>
+                <button type="button" id="closeEditModalBtn" class="modal-close" aria-label="Tutup">&times;</button>
+            </div>
+            <form id="editParticipantForm" class="modal-form">
+                <div class="field"><label for="editNameInput">Nama peserta</label><input id="editNameInput" type="text" required></div>
+                <div class="field"><label for="editNisInput">NIS</label><input id="editNisInput" type="text" inputmode="numeric" required></div>
+                <div class="modal-actions"><button type="button" id="cancelEditBtn" class="outline">Batal</button><button type="submit" class="primary">Simpan Perubahan</button></div>
+            </form>
+        </section>
+    </div>
+
+    <div id="adminApp" class="admin-layout" hidden>
+        <aside class="sidebar">
+            <div class="sidebar-topbar">
+                <div class="brand"><small>Ujian Sekolah</small><h1>STS MikroTik</h1></div>
+                <button type="button" id="menuCloseBtn" class="menu-close-btn" aria-label="Tutup menu navigasi">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+                </button>
+            </div>
+            <nav class="sidebar-nav" aria-label="Navigasi admin">
+                <button class="nav-button active" data-view="overviewView">Ringkasan</button>
+                <button class="nav-button" data-view="participantsView">Option Peserta</button>
+                <button class="nav-button" data-view="recapView">Rekap</button>
+                <button class="nav-button" data-view="violationsView">Pelanggaran</button>
+                <button class="nav-button" data-view="answerView">Kunci Jawaban</button>
+            </nav>
+        </aside>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <main class="main-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button type="button" id="menuToggleBtn" class="menu-toggle" aria-label="Buka menu navigasi" aria-haspopup="true" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+                    </button>
+                    <div><div class="eyebrow">Control Center</div><h2 id="pageTitle">Ringkasan Ujian</h2></div>
+                </div>
+                <div class="admin-menu">
+                    <button type="button" id="adminMenuBtn" class="admin-menu-btn" aria-haspopup="true" aria-expanded="false">
+                        <span class="avatar-label">Administrator</span>
+                        <span class="avatar">AD</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div id="adminDropdown" class="admin-dropdown" hidden>
+                        <a class="dropdown-item" href="sts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Buka halaman siswa</a>
+                        <div class="dropdown-divider" role="separator"></div>
+                        <button type="button" id="logoutBtn" class="dropdown-item danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar Panel</button>
+                    </div>
+                </div>
+            </header>
+
+            <section id="overviewView" class="view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+                        <span class="stat-label">Total peserta</span>
+                        <strong id="totalParticipants" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon gray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span>
+                        <span class="stat-label">Belum login</span>
+                        <strong id="waitingParticipants" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span>
+                        <span class="stat-label">Mengerjakan</span>
+                        <strong id="inProgressParticipants" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span>
+                        <span class="stat-label">Sudah selesai</span>
+                        <strong id="completedParticipants" class="stat-value">0</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
+                        <span class="stat-label">Rata-rata nilai</span>
+                        <strong id="averageScore" class="stat-value">-</strong>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg></span>
+                        <span class="stat-label">Keluar fullscreen</span>
+                        <strong id="fullscreenViolations" class="stat-value">0</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section id="participantsView" class="view">
+                <div class="content-card">
+                    <div class="section-heading"><div><h3>Data peserta ujian</h3><p>Tambahkan peserta, import CSV, dan reset akses login bila diperlukan.</p></div><div class="button-row"><button class="danger" id="resetAllBtn">Reset Semua Login</button></div></div>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input id="searchInput" type="text" placeholder="Cari nama siswa atau NIS..." autocomplete="off">
+                    </div>
+                    <form id="addParticipantForm" class="form-grid"><div class="field"><label for="nameInput">Nama peserta</label><input id="nameInput" type="text" placeholder="Contoh: Andi Prasetyo" required></div><div class="field"><label for="nisInput">NIS</label><input id="nisInput" type="text" inputmode="numeric" placeholder="Contoh: 2024001" required></div><button class="primary" type="submit">Tambah Peserta</button></form>
+                    <div class="section-heading" style="margin-top: 28px; margin-bottom: 10px;"><div><h3>Upload daftar peserta</h3><p>Gunakan CSV dengan kolom <strong>nama</strong> dan <strong>nis</strong>. Baris pertama dapat berisi header.</p></div></div>
+                    <div class="button-row"><input id="participantFileInput" type="file" accept=".csv,text/csv" style="max-width: 260px; padding: 10px; border: 1px solid var(--line); border-radius: 9px;"><button class="primary" id="uploadParticipantsBtn" type="button">Import CSV</button><a class="outline" href="peserta-template.csv" download>Download Template</a></div>
+                    <div id="participantsTable" style="margin-top: 24px;"></div>
+                </div>
+            </section>
+
+            <section id="recapView" class="view">
+                <div class="content-card">
+                    <div class="section-heading"><div><h3>Rekap nilai ujian</h3><p>Ringkasan nilai akhir semua peserta STS MikroTik.</p></div><div class="button-row"><button class="primary" id="exportBtn">Export Nilai CSV</button></div></div>
+                    <div id="recapChips" class="recap-chips"></div>
+                    <div id="recapTable" style="margin-top: 20px;"></div>
+                    <div id="recapPagination"></div>
+                </div>
+            </section>
+
+            <section id="violationsView" class="view"><div class="content-card"><div class="section-heading"><div><h3>Log pelanggaran ujian</h3><p>Peristiwa keluar fullscreen dan berpindah tab yang tercatat selama ujian.</p><p><strong id="fullscreenSummary">0 siswa, 0 kali keluar fullscreen</strong></p></div><button class="danger" id="clearViolationsBtn">Hapus Semua Log</button></div><div id="violationsTable"></div></div></section>
+
+            <section id="answerView" class="view"><div class="content-card"><div class="section-heading"><div><h3>Kunci jawaban</h3><p>Area ini hanya tersedia setelah admin berhasil login.</p></div></div><div id="answerKey" class="key-grid"></div></div></section>
+        </main>
+    </div>
+
+    <script>
+        const PARTICIPANTS_KEY = 'mikrotikExamParticipants';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwGZboLzpJSjP0vUyXaKMSUibDgFjzaoXAm6cCY_SEI71s0xq2ZCUdRxdxJcPBZKMHs/exec';
+        const ADMIN_SESSION_KEY = 'mikrotikAdminAuthenticated';
+        const ANSWERS = ['b','a','b','c','b','b','a','b','d','a','a','a','a','b','a','b','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a'];
+        let pageSize = 10;
+        let currentPage = 0;
+        let searchQuery = '';
+        let recapPageSize = 10;
+        let recapCurrentPage = 0;
+
+        function filteredParticipants() {
+            const keyword = String(searchQuery || '').trim().toLowerCase();
+            if (!keyword) return getParticipants();
+            return getParticipants().filter((participant) =>
+                (String(participant.name) + ' ' + String(participant.nis)).toLowerCase().includes(keyword)
+            );
+        }
+
+        function getPerPage() {
+            return pageSize === 'all' ? Math.max(1, getParticipants().length) : pageSize;
+        }
+        const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+        const ICON_RESET = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>';
+        const ICON_DELETE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+        const loginView = document.getElementById('loginView');
+        const adminApp = document.getElementById('adminApp');
+        const pageTitle = document.getElementById('pageTitle');
+        const editModalBackdrop = document.getElementById('editModalBackdrop');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        let editingNis = null;
+        let participantsCache = [];
+        let activeRequests = 0;
+
+        function normalizeNis(value) {
+            return String(value || '').trim().replace(/\D/g, '');
+        }
+
+        function getParticipants() {
+            return participantsCache;
+        }
+
+        function setLoading(isLoading, message = 'Memproses data...') {
+            if (isLoading) {
+                activeRequests++;
+                loadingText.textContent = message;
+                loadingOverlay.hidden = false;
+                return;
+            }
+
+            activeRequests = Math.max(0, activeRequests - 1);
+            if (activeRequests === 0) loadingOverlay.hidden = true;
+        }
+
+        function requestLabel(action) {
+            const labels = {
+                listParticipants: 'Memuat data peserta...',
+                addParticipant: 'Menambahkan peserta...',
+                updateParticipant: 'Menyimpan perubahan...',
+                deleteParticipant: 'Menghapus peserta...',
+                resetParticipant: 'Mereset login peserta...',
+                resetAll: 'Mereset semua login...',
+                clearViolations: 'Menghapus log pelanggaran...',
+                saveResult: 'Menyimpan nilai...',
+                saveViolation: 'Menyimpan pelanggaran...'
+            };
+            return labels[action] || 'Memproses data...';
+        }
+
+        async function apiRequest(action, payload = {}, options = {}) {
+            const silent = options.silent === true;
+            if (!silent) setLoading(true, requestLabel(action));
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action, ...payload })
+                });
+                const result = await response.json();
+                if (!result.ok) throw new Error(result.error || 'Request Google Sheets gagal.');
+                return result.data;
+            } finally {
+                if (!silent) setLoading(false);
+            }
+        }
+
+        async function loadParticipants(options = {}) {
+            participantsCache = await apiRequest('listParticipants', {}, options);
+            render();
+        }
+
+        function openAdminDashboard() {
+            loginView.classList.add('hidden');
+            adminApp.hidden = false;
+            loadParticipants().catch(showApiError);
+        }
+
+        function showApiError(error) {
+            console.error(error);
+            alert(`Gagal terhubung ke Google Sheets: ${error.message}`);
+        }
+
+        function participantStatus(participant) {
+            if (participant.blocked) return ['Diblokir', 'blocked'];
+            if (participant.loggedIn) return ['Sedang ujian', 'waiting'];
+            if (participant.lastScore !== undefined) return ['Selesai', 'done'];
+            return ['Belum mulai', 'waiting'];
+        }
+
+        function tableMarkup(participants) {
+            if (!participants.length) return '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada peserta.</div>';
+            return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>NIS</th><th>Status</th><th>Nilai</th><th>Keluar Fullscreen</th><th>Total Pelanggaran</th><th>Aksi</th></tr></thead><tbody>${participants.map((participant, index) => {
+                const [status, statusClass] = participantStatus(participant);
+                const score = participant.lastScore !== undefined ? `${participant.lastScore}%` : '-';
+                const violations = participant.cheatEvents?.length || 0;
+                const fullscreenViolations = participant.fullscreenExitCount ?? (participant.cheatEvents || []).filter((event) => String(event.reason || '').toLowerCase().includes('fullscreen')).length;
+                return `<tr><td>${currentPage * getPerPage() + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td class="score">${score}</td><td class="violation-count">${fullscreenViolations}</td><td class="violation-count">${violations}</td><td><div class="button-row"><button class="icon-btn" data-edit="${participant.nis}" title="Edit data" aria-label="Edit ${participant.name}">${ICON_EDIT}</button><button class="icon-btn" data-reset="${participant.nis}" title="Reset login" aria-label="Reset login ${participant.name}">${ICON_RESET}</button><button class="icon-btn icon-danger" data-delete="${participant.nis}" title="Hapus peserta" aria-label="Hapus ${participant.name}">${ICON_DELETE}</button></div></td></tr>`;
+            }).join('')}</tbody></table></div>`;
+        }
+
+        function renderViolations() {
+            const violations = getParticipants().flatMap((participant) => (participant.cheatEvents || []).map((event) => ({
+                ...event,
+                name: participant.name,
+                nis: participant.nis
+            }))).sort((first, second) => second.timestamp - first.timestamp);
+
+            const container = document.getElementById('violationsTable');
+            if (!violations.length) {
+                container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada pelanggaran yang tercatat.</div>';
+                return;
+            }
+
+            container.innerHTML = `<div class="violation-list">${violations.map((violation) => `<div class="violation-item"><strong>${violation.name} &middot; NIS ${violation.nis}</strong><div>${violation.reason}</div><span>${new Date(violation.timestamp).toLocaleString('id-ID')}</span></div>`).join('')}</div>`;
+        }
+
+        function paginationMarkup() {
+            const filtered = filteredParticipants();
+            const perPage = getPerPage();
+            const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+            const activeState = (value) => (String(pageSize) === String(value) ? 'active' : '');
+            return `
+                <div class="pagination">
+                    <div class="pagination-group">
+                        <span class="pagination-info">Tampilkan:</span>
+                        <div class="page-size" role="group" aria-label="Jumlah baris per halaman">
+                            <button type="button" class="size-btn ${activeState(5)}" data-pagesize="5">5</button>
+                            <button type="button" class="size-btn ${activeState(10)}" data-pagesize="10">10</button>
+                            <button type="button" class="size-btn ${activeState('all')}" data-pagesize="all">Semua</button>
+                        </div>
+                    </div>
+                    <div class="pagination-group">
+                        <span class="pagination-info">${filtered.length} peserta${String(searchQuery || '').trim() ? ' (hasil filter)' : ''} &middot; Hal ${currentPage + 1}/${totalPages}</span>
+                        <button type="button" class="outline" data-page="prev" ${currentPage === 0 ? 'disabled' : ''}>Sebelumnya</button>
+                        <button type="button" class="outline" data-page="next" ${currentPage >= totalPages - 1 ? 'disabled' : ''}>Berikutnya</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function gradeLabel(score) {
+            return score >= 80 ? 'Sangat Baik' : score >= 70 ? 'Baik' : score >= 60 ? 'Cukup' : 'Perlu Remedial';
+        }
+
+        function recapList() {
+            const participants = [...getParticipants()];
+            participants.sort((first, second) => {
+                const hasFirst = first.lastScore !== undefined;
+                const hasSecond = second.lastScore !== undefined;
+                if (hasFirst !== hasSecond) return hasFirst ? -1 : 1;
+                return (second.lastScore ?? -1) - (first.lastScore ?? -1);
+            });
+            return participants;
+        }
+
+        function getRecapPerPage() {
+            return recapPageSize === 'all' ? Math.max(1, recapList().length) : recapPageSize;
+        }
+
+        function recapTableMarkup() {
+            const participants = recapList();
+            const perPage = getRecapPerPage();
+            const totalPages = Math.max(1, Math.ceil(participants.length / perPage));
+            if (recapCurrentPage >= totalPages) recapCurrentPage = totalPages - 1;
+            const pageItems = participants.slice(recapCurrentPage * perPage, (recapCurrentPage + 1) * perPage);
+            if (!pageItems.length) return '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada data peserta.</div>';
+            const rows = pageItems.map((participant, index) => {
+                const status = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
+                const statusClass = participant.loggedIn ? 'waiting' : participant.lastScore !== undefined ? 'done' : 'waiting';
+                const score = participant.lastScore;
+                const grade = score !== undefined ? gradeLabel(score) : '-';
+                const gradeClass = score !== undefined && score < 60 ? 'blocked' : 'done';
+                return `<tr><td>${recapCurrentPage * perPage + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td class="score">${score !== undefined ? `${score}%` : '-'}</td><td><span class="status ${gradeClass}">${grade}</span></td></tr>`;
+            }).join('');
+            return `<div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Status</th><th>Nilai</th><th>Predikat</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+
+        function recapPaginationMarkup(totalPages) {
+            const activeState = (value) => (String(recapPageSize) === String(value) ? 'active' : '');
+            return `
+                <div class="pagination">
+                    <div class="pagination-group">
+                        <span class="pagination-info">Tampilkan:</span>
+                        <div class="page-size" role="group" aria-label="Jumlah baris per halaman">
+                            <button type="button" class="size-btn ${activeState(5)}" data-pagesize="5">5</button>
+                            <button type="button" class="size-btn ${activeState(10)}" data-pagesize="10">10</button>
+                            <button type="button" class="size-btn ${activeState('all')}" data-pagesize="all">Semua</button>
+                        </div>
+                    </div>
+                    <div class="pagination-group">
+                        <span class="pagination-info">${recapList().length} peserta &middot; Hal ${recapCurrentPage + 1}/${totalPages}</span>
+                        <button type="button" class="outline" data-page="prev" ${recapCurrentPage === 0 ? 'disabled' : ''}>Sebelumnya</button>
+                        <button type="button" class="outline" data-page="next" ${recapCurrentPage >= totalPages - 1 ? 'disabled' : ''}>Berikutnya</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecap() {
+            const participants = getParticipants();
+            const completed = participants.filter((participant) => participant.lastScore !== undefined);
+            const scores = completed.map((participant) => participant.lastScore);
+            const average = scores.length ? Math.round(scores.reduce((sum, value) => sum + value, 0) / scores.length) : null;
+            const highest = scores.length ? Math.max(...scores) : null;
+            const lowest = scores.length ? Math.min(...scores) : null;
+            const remedial = completed.filter((participant) => participant.lastScore < 60).length;
+            document.getElementById('recapChips').innerHTML = `
+                <span class="recap-chip"><strong>${participants.length}</strong> peserta</span>
+                <span class="recap-chip"><strong>${completed.length}</strong> sudah dinilai</span>
+                <span class="recap-chip"><strong>${average ?? '-'}%</strong> rata-rata</span>
+                <span class="recap-chip"><strong>${highest ?? '-'}%</strong> tertinggi</span>
+                <span class="recap-chip"><strong>${lowest ?? '-'}%</strong> terendah</span>
+                <span class="recap-chip remedial"><strong>${remedial}</strong> perlu remedial</span>
+            `;
+            document.getElementById('recapTable').innerHTML = recapTableMarkup();
+            const list = recapList();
+            const perPage = getRecapPerPage();
+            const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+            document.getElementById('recapPagination').innerHTML = recapPaginationMarkup(totalPages);
+        }
+
+        function render() {
+            const participants = getParticipants();
+            const filtered = filteredParticipants();
+            const perPage = getPerPage();
+            const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            const pageItems = filtered.slice(currentPage * perPage, (currentPage + 1) * perPage);
+            document.getElementById('participantsTable').innerHTML = tableMarkup(pageItems) + paginationMarkup();
+            document.getElementById('totalParticipants').textContent = participants.length;
+            const waiting = participants.filter((participant) => !participant.loggedIn && participant.lastScore === undefined).length;
+            document.getElementById('waitingParticipants').textContent = waiting;
+            const inProgress = participants.filter((participant) => participant.loggedIn).length;
+            document.getElementById('inProgressParticipants').textContent = inProgress;
+            const completed = participants.filter((participant) => participant.lastScore !== undefined);
+            document.getElementById('completedParticipants').textContent = completed.length;
+            const average = completed.length ? Math.round(completed.reduce((sum, participant) => sum + participant.lastScore, 0) / completed.length) : '-';
+            document.getElementById('averageScore').textContent = average === '-' ? average : `${average}%`;
+            const fullscreenViolations = participants.reduce((sum, participant) => sum + (participant.fullscreenExitCount ?? (participant.cheatEvents || []).filter((event) => String(event.reason || '').toLowerCase().includes('fullscreen')).length), 0);
+            document.getElementById('fullscreenViolations').textContent = fullscreenViolations;
+            const fullscreenStudents = participants.filter((participant) => (participant.fullscreenExitCount ?? (participant.cheatEvents || []).filter((event) => String(event.reason || '').toLowerCase().includes('fullscreen')).length) > 0).length;
+            document.getElementById('fullscreenSummary').textContent = `${fullscreenStudents} siswa, ${fullscreenViolations} kali keluar fullscreen`;
+            document.querySelectorAll('[data-reset]').forEach((button) => button.addEventListener('click', () => resetParticipant(button.dataset.reset)));
+            document.querySelectorAll('[data-edit]').forEach((button) => button.addEventListener('click', () => editParticipant(button.dataset.edit)));
+            document.querySelectorAll('[data-delete]').forEach((button) => button.addEventListener('click', () => deleteParticipant(button.dataset.delete)));
+            renderRecap();
+            renderViolations();
+        }
+
+        async function resetParticipant(nis) {
+            try {
+                await apiRequest('resetParticipant', { nis });
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        }
+
+        function editParticipant(nis) {
+            const participants = getParticipants();
+            const participant = participants.find((item) => item.nis === nis);
+            if (!participant) return;
+
+            editingNis = nis;
+            document.getElementById('editNameInput').value = participant.name;
+            document.getElementById('editNisInput').value = participant.nis;
+            editModalBackdrop.hidden = false;
+            document.getElementById('editNameInput').focus();
+        }
+
+        function closeEditModal() {
+            editingNis = null;
+            editModalBackdrop.hidden = true;
+        }
+
+        async function saveEditedParticipant(event) {
+            event.preventDefault();
+            if (!editingNis) return;
+
+            const participants = getParticipants();
+            const participant = participants.find((item) => item.nis === editingNis);
+            if (!participant) {
+                closeEditModal();
+                return;
+            }
+
+            const name = document.getElementById('editNameInput').value.trim();
+            const newNis = document.getElementById('editNisInput').value.trim();
+            if (!name || !newNis) {
+                alert('Nama dan NIS tidak boleh kosong.');
+                return;
+            }
+
+            const duplicate = participants.some((item) => normalizeNis(item.nis) === normalizeNis(newNis) && item !== participant);
+            if (duplicate) {
+                alert(`NIS ${newNis} sudah digunakan peserta lain.`);
+                return;
+            }
+
+            try {
+                await apiRequest('updateParticipant', { oldNis: editingNis, participant: { name, nis: newNis } });
+                closeEditModal();
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        }
+
+        async function deleteParticipant(nis) {
+            const participants = getParticipants();
+            const participant = participants.find((item) => item.nis === nis);
+            if (!participant) return;
+
+            const confirmed = confirm(`Hapus peserta ${participant.name} dengan NIS ${participant.nis}?`);
+            if (!confirmed) return;
+
+            try {
+                await apiRequest('deleteParticipant', { nis });
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        }
+
+        function exportScores() {
+            const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+            const headers = ['No', 'Nama', 'NIS', 'Status', 'Nilai', 'Predikat'];
+            const rows = recapList().map((participant, index) => {
+                const status = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
+                const score = participant.lastScore;
+                return [index + 1, participant.name, participant.nis, status, score !== undefined ? score : '', score !== undefined ? gradeLabel(score) : ''];
+            });
+            const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(';')).join('\r\n');
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' }));
+            link.download = `nilai-sts-mikrotik-${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        }
+
+        async function resetAll() {
+            try {
+                await apiRequest('resetAll');
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        }
+
+        function parseCsv(text) {
+            const rows = [];
+            let row = [];
+            let cell = '';
+            let quoted = false;
+
+            for (let index = 0; index < text.length; index++) {
+                const character = text[index];
+                const nextCharacter = text[index + 1];
+                if (character === '"' && quoted && nextCharacter === '"') {
+                    cell += '"';
+                    index++;
+                } else if (character === '"') {
+                    quoted = !quoted;
+                } else if ((character === ',' || character === ';') && !quoted) {
+                    row.push(cell.trim());
+                    cell = '';
+                } else if ((character === '\n' || character === '\r') && !quoted) {
+                    if (character === '\r' && nextCharacter === '\n') index++;
+                    row.push(cell.trim());
+                    if (row.some((value) => value !== '')) rows.push(row);
+                    row = [];
+                    cell = '';
+                } else {
+                    cell += character;
+                }
+            }
+
+            if (cell || row.length) {
+                row.push(cell.trim());
+                if (row.some((value) => value !== '')) rows.push(row);
+            }
+            return rows;
+        }
+
+        function importParticipants(file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const rows = parseCsv(String(reader.result || ''));
+                if (!rows.length) { alert('File CSV kosong.'); return; }
+
+                const firstRow = rows[0].map((value) => value.toLowerCase());
+                const hasHeader = firstRow.includes('nama') || firstRow.includes('name') || firstRow.includes('nis');
+                const startIndex = hasHeader ? 1 : 0;
+                const detectedNameIndex = firstRow.findIndex((value) => value === 'nama' || value === 'name');
+                const nameIndex = hasHeader && detectedNameIndex >= 0 ? detectedNameIndex : 0;
+                const detectedNisIndex = firstRow.indexOf('nis');
+                const nisIndex = hasHeader && detectedNisIndex >= 0 ? detectedNisIndex : 1;
+                const imported = [];
+                rows.slice(startIndex).forEach((row) => {
+                    const name = String(row[nameIndex] || '').trim();
+                    const nis = String(row[nisIndex] || '').trim();
+                    if (name && nis) imported.push({ name, nis });
+                });
+
+                apiRequest('addParticipants', { participants: imported })
+                    .then((result) => loadParticipants().then(() => result))
+                    .then((result) => alert(`${result.added} peserta berhasil diimport. ${result.skipped} baris dilewati.`))
+                    .catch(showApiError);
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function showView(viewId, label) {
+            document.querySelectorAll('.view').forEach((view) => view.classList.toggle('active', view.id === viewId));
+            document.querySelectorAll('.nav-button[data-view]').forEach((button) => button.classList.toggle('active', button.dataset.view === viewId));
+            pageTitle.textContent = label;
+        }
+
+        let adminToastTimer = null;
+
+        function showAdminToast(message) {
+            const toast = document.getElementById('adminToast');
+            toast.querySelector('.toast-text').textContent = message;
+            toast.classList.add('show');
+            clearTimeout(adminToastTimer);
+            adminToastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const passwordInput = document.getElementById('adminPasswordInput');
+            const password = passwordInput.value;
+            if (!password.trim()) {
+                showAdminToast('Masukkan password admin');
+                passwordInput.focus();
+                return;
+            }
+            try {
+                await apiRequest('adminLogin', { password });
+            } catch (error) {
+                alert(error.message || 'Password admin salah.');
+                return;
+            }
+            sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+            openAdminDashboard();
+        });
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === PARTICIPANTS_KEY && sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
+                render();
+            }
+        });
+
+        setInterval(() => {
+            if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true' && !adminApp.hidden) {
+                loadParticipants({ silent: true }).catch((error) => console.error('Sinkronisasi background gagal:', error));
+            }
+        }, 7000);
+
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const sidebarEl = document.querySelector('.sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        function openSidebar() {
+            sidebarEl.classList.add('open');
+            sidebarBackdrop.classList.add('open');
+            menuToggleBtn.setAttribute('aria-expanded', 'true');
+        }
+        function closeSidebar() {
+            sidebarEl.classList.remove('open');
+            sidebarBackdrop.classList.remove('open');
+            menuToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+        menuToggleBtn.addEventListener('click', openSidebar);
+        menuCloseBtn.addEventListener('click', closeSidebar);
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSidebar(); });
+
+        document.querySelectorAll('.nav-button[data-view]').forEach((button) => button.addEventListener('click', () => { showView(button.dataset.view, button.textContent); closeSidebar(); }));
+        document.addEventListener('click', (event) => {
+            const sizeBtn = event.target.closest('[data-pagesize]');
+            if (sizeBtn) {
+                const isRecap = Boolean(sizeBtn.closest('#recapPagination'));
+                const value = sizeBtn.dataset.pagesize === 'all' ? 'all' : Number(sizeBtn.dataset.pagesize);
+                if (isRecap) {
+                    recapPageSize = value;
+                    recapCurrentPage = 0;
+                    renderRecap();
+                } else {
+                    pageSize = value;
+                    currentPage = 0;
+                    render();
+                }
+                return;
+            }
+            const pageBtn = event.target.closest('[data-page]');
+            if (!pageBtn || pageBtn.disabled) return;
+            if (pageBtn.closest('#recapPagination')) {
+                const list = recapList();
+                const perPage = getRecapPerPage();
+                const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+                if (pageBtn.dataset.page === 'next' && recapCurrentPage < totalPages - 1) recapCurrentPage++;
+                if (pageBtn.dataset.page === 'prev' && recapCurrentPage > 0) recapCurrentPage--;
+                renderRecap();
+                return;
+            }
+            const filtered = filteredParticipants();
+            const perPage = getPerPage();
+            const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+            if (pageBtn.dataset.page === 'next' && currentPage < totalPages - 1) currentPage++;
+            if (pageBtn.dataset.page === 'prev' && currentPage > 0) currentPage--;
+            render();
+        });
+        document.getElementById('searchInput').addEventListener('input', () => {
+            searchQuery = document.getElementById('searchInput').value;
+            currentPage = 0;
+            render();
+        });
+        document.getElementById('addParticipantForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('nameInput').value.trim();
+            const nis = document.getElementById('nisInput').value.trim();
+            const participants = getParticipants();
+            if (participants.some((participant) => normalizeNis(participant.nis) === normalizeNis(nis))) { alert('NIS sudah terdaftar.'); return; }
+            try {
+                await apiRequest('addParticipant', { participant: { name, nis } });
+                event.target.reset();
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        });
+        document.getElementById('exportBtn').addEventListener('click', exportScores);
+        document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+        document.getElementById('uploadParticipantsBtn').addEventListener('click', () => {
+            const file = document.getElementById('participantFileInput').files[0];
+            if (!file) { alert('Pilih file CSV terlebih dahulu.'); return; }
+            importParticipants(file);
+        });
+        document.getElementById('clearViolationsBtn').addEventListener('click', async () => {
+            try {
+                await apiRequest('clearViolations');
+                await loadParticipants();
+            } catch (error) { showApiError(error); }
+        });
+        const adminMenuBtn = document.getElementById('adminMenuBtn');
+        const adminDropdown = document.getElementById('adminDropdown');
+        function toggleAdminMenu(force) {
+            const show = typeof force === 'boolean' ? force : adminDropdown.hidden;
+            adminDropdown.hidden = !show;
+            adminMenuBtn.setAttribute('aria-expanded', String(show));
+        }
+        adminMenuBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleAdminMenu();
+        });
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.admin-menu')) toggleAdminMenu(false);
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') toggleAdminMenu(false);
+        });
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            toggleAdminMenu(false);
+            sessionStorage.removeItem(ADMIN_SESSION_KEY);
+            location.reload();
+        });
+        document.getElementById('editParticipantForm').addEventListener('submit', saveEditedParticipant);
+        document.getElementById('closeEditModalBtn').addEventListener('click', closeEditModal);
+        document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+        editModalBackdrop.addEventListener('click', (event) => {
+            if (event.target === editModalBackdrop) closeEditModal();
+        });
+        document.getElementById('answerKey').innerHTML = ANSWERS.map((answer, index) => `<div class="key-item"><strong>${index + 1}.</strong> ${answer.toUpperCase()}</div>`).join('');
+
+        if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
+            openAdminDashboard();
+        }
+    </script>
+</body>
+</html>

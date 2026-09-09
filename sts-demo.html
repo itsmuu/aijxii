@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STS MikroTik | Ujian Sekolah</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="navbar.js" defer></script>
+    <style>
+        :root {
+            --school-blue: #0f3b77;
+            --school-blue-soft: #eaf3ff;
+            --school-gold: #d9b15d;
+            --school-card: #ffffff;
+            --school-text: #13233f;
+            --school-muted: #5d6b82;
+            --school-border: #dfe7f3;
+            --school-success: #1e8e5a;
+            --school-warning: #d97706;
+            --school-danger: #dc2626;
+            --school-shadow: 0 18px 48px rgba(15, 59, 119, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, #eef5ff 0%, #f7f9fc 100%);
+            color: var(--school-text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .exam-app {
+            width: 100%;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .login-shell {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .login-panel,
+        .admin-panel,
+        .exam-panel {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--school-border);
+            border-radius: 24px;
+            box-shadow: var(--school-shadow);
+            overflow: hidden;
+        }
+
+        .login-panel {
+            padding: clamp(28px, 6vw, 52px);
+            background: linear-gradient(145deg, #0c315f, #164d8d);
+            color: white;
+            position: relative;
+        }
+
+        .login-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(217,177,93,0.25), transparent 34%);
+            pointer-events: none;
+        }
+
+        .login-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-tag {
+            display: inline-flex;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .login-panel h1 {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 5vw, 42px);
+            line-height: 1.1;
+        }
+
+        .login-kicker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            color: #b9d5f4;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .login-kicker::before {
+            content: '';
+            width: 28px;
+            height: 2px;
+            background: var(--school-gold);
+        }
+
+        .login-panel p {
+            margin: 0 0 28px;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.7;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 420px;
+        }
+
+        .input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .input-wrap label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-wrap input:focus {
+            border-color: #f2d390;
+            box-shadow: 0 0 0 3px rgba(242, 211, 144, .18);
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(255,255,255,0.55);
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .danger-btn,
+        .reset-btn,
+        .ghost-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--school-gold), #f2d390);
+            color: #102a4b;
+            box-shadow: 0 14px 28px rgba(217,177,93,0.33);
+        }
+
+        .secondary-btn {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: white;
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #b91c1c, #ef4444);
+            color: white;
+        }
+
+        .reset-btn {
+            background: #edf5ff;
+            color: var(--school-blue);
+            border: 1px solid #dfeafc;
+        }
+
+        .ghost-btn {
+            background: transparent;
+            border: 1px solid var(--school-border);
+            color: var(--school-blue);
+        }
+
+        .primary-btn:hover,
+        .secondary-btn:hover,
+        .danger-btn:hover,
+        .reset-btn:hover,
+        .ghost-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .admin-entry-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 8px;
+            padding: 9px 15px;
+            margin-top: 26px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.92);
+            font-size: 12.5px;
+            font-weight: 700;
+            text-decoration: none;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 6px 18px rgba(12, 35, 70, 0.25);
+            overflow: hidden;
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, color .25s ease;
+        }
+
+        .admin-entry-btn svg {
+            width: 15px;
+            height: 15px;
+            color: #f2d390;
+            transition: transform .25s ease;
+        }
+
+        .admin-entry-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: rgba(242, 211, 144, 0.16);
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .admin-entry-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(242, 211, 144, 0.55);
+            color: #ffffff;
+            box-shadow: 0 10px 26px rgba(12, 35, 70, 0.35);
+        }
+
+        .admin-entry-btn:hover::after {
+            opacity: 1;
+        }
+
+        .admin-entry-btn:hover svg {
+            transform: translateY(-1px);
+        }
+
+        .admin-entry-btn:active {
+            transform: translateY(0);
+        }
+
+        .admin-entry-btn:focus-visible {
+            outline: 2px solid #f2d390;
+            outline-offset: 2px;
+        }
+
+        .toast {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #322f35;
+            color: #f4eff4;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 14px rgba(12, 35, 70, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .toast svg {
+            width: 14px;
+            height: 14px;
+            flex: none;
+            color: #f2d390;
+        }
+
+        .login-form .primary-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-form .primary-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.26);
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .login-form .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(217,177,93,0.42);
+        }
+
+        .login-form .primary-btn:hover::after {
+            opacity: 1;
+        }
+
+        .login-form .primary-btn:active {
+            transform: translateY(0) scale(.99);
+            box-shadow: 0 8px 20px rgba(217,177,93,0.3);
+        }
+
+        .admin-panel {
+            background: white;
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .admin-panel .input-wrap label {
+            color: var(--school-text);
+        }
+
+        .admin-panel.hidden,
+        .inline-hidden {
+            display: none !important;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 26px;
+            color: var(--school-text);
+        }
+
+        .panel-subtitle {
+            margin: 0;
+            color: var(--school-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .admin-auth {
+            padding: 18px;
+            border: 1px solid var(--school-border);
+            border-radius: 16px;
+            background: #f8fbff;
+        }
+
+        .admin-auth form,
+        .admin-add form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .admin-auth input,
+        .admin-add input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--school-border);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            color: var(--school-text);
+        }
+
+        .small-note {
+            color: var(--school-muted);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .participant-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 14px 16px;
+            border: 1px solid var(--school-border);
+            border-radius: 12px;
+            background: #fbfdff;
+        }
+
+        .participant-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .participant-meta strong {
+            font-size: 15px;
+            color: var(--school-text);
+        }
+
+        .participant-meta span {
+            color: var(--school-muted);
+            font-size: 12px;
+        }
+
+        .participant-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .admin-controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .exam-panel {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: clamp(20px, 4vw, 38px);
+        }
+
+        .exam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--school-border);
+            margin-bottom: 26px;
+        }
+
+        .exam-badge {
+            display: inline-flex;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: var(--school-blue-soft);
+            color: var(--school-blue);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .exam-header h2 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 38px);
+            color: var(--school-text);
+        }
+
+        .exam-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+            color: var(--school-muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .exam-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .timer-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 118px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #fff7e6;
+            border: 1px solid #f1d49a;
+            color: #915d08;
+            font-size: 18px;
+            font-variant-numeric: tabular-nums;
+            font-weight: 800;
+        }
+
+        .timer-box.warning {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: var(--school-danger);
+        }
+
+        .fullscreen-notice {
+            margin: -8px 0 22px;
+            padding: 11px 14px;
+            border: 1px solid #f1d49a;
+            border-radius: 10px;
+            background: #fffaf0;
+            color: #805b16;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--school-border);
+            border-radius: 14px;
+            background: white;
+        }
+
+        .participant-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px;
+        }
+
+        .participant-table th,
+        .participant-table td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--school-border);
+            text-align: left;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .participant-table th {
+            background: #f2f6fc;
+            color: var(--school-blue);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .participant-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-pill.done {
+            background: #e7f7ef;
+            color: var(--school-success);
+        }
+
+        .status-pill.waiting {
+            background: #fff7e6;
+            color: var(--school-warning);
+        }
+
+        .score-value {
+            color: var(--school-blue);
+            font-weight: 800;
+        }
+
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid var(--school-border);
+            border-radius: 18px;
+            padding: 22px 20px;
+        }
+
+        .question-card h3 {
+            font-size: clamp(18px, 2.5vw, 23px);
+            line-height: 1.5;
+        }
+
+        .exam-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+            color: var(--school-muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .progress-track {
+            height: 7px;
+            flex: 1;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #e7eef7;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--school-blue), #4d91cb);
+            transition: width .25s ease;
+        }
+
+        .question-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .question-no {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--school-blue-soft);
+            color: var(--school-blue);
+            font-weight: 800;
+        }
+
+        .question-card h3 {
+            margin: 0;
+            color: var(--school-text);
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--school-border);
+            background: #f9fbff;
+        }
+
+        .option input {
+            accent-color: var(--school-blue);
+            margin-top: 3px;
+        }
+
+        .option label {
+            cursor: pointer;
+            color: var(--school-text);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .exam-footer {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .exam-footer .nav-btn {
+            flex: 1 1 220px;
+            max-width: 260px;
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            font-size: 14px;
+        }
+
+        .exam-footer .nav-btn svg {
+            width: 20px;
+            height: 20px;
+            flex: none;
+        }
+
+        .exam-footer .nav-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-card {
+            margin-top: 26px;
+            border-radius: 18px;
+            padding: 20px 22px;
+            border: 1px solid var(--school-border);
+            background: linear-gradient(145deg, #f5fbff, white);
+        }
+
+        .result-card h3 {
+            margin: 0 0 10px;
+            font-size: 22px;
+            color: var(--school-text);
+        }
+
+        .result-card p {
+            margin: 6px 0;
+            color: var(--school-muted);
+            line-height: 1.7;
+        }
+
+        .confirm-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(12, 35, 70, 0.55);
+            backdrop-filter: blur(4px);
+        }
+
+        .confirm-backdrop[hidden] {
+            display: none;
+        }
+
+        .confirm-modal {
+            width: min(400px, 100%);
+            border-radius: 22px;
+            padding: 28px 24px;
+            background: white;
+            text-align: center;
+            box-shadow: 0 24px 70px rgba(12, 35, 70, 0.3);
+            animation: modal-pop .25s ease;
+        }
+
+        @keyframes modal-pop {
+            from { transform: scale(.94) translateY(10px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .confirm-icon {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: #edf5ff;
+            color: var(--school-blue);
+        }
+
+        .confirm-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .confirm-modal h3 {
+            margin: 0 0 8px;
+            font-size: 21px;
+            color: var(--school-text);
+        }
+
+        .confirm-modal p {
+            margin: 0 0 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--school-muted);
+        }
+
+        .confirm-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .confirm-actions .primary-btn,
+        .confirm-actions .ghost-btn {
+            padding: 13px 16px;
+        }
+
+        .loading-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 250px;
+            padding: 20px 26px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 18px 50px rgba(12, 35, 70, 0.25);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--school-text);
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            flex: none;
+            border: 3px solid #dce9f7;
+            border-top-color: var(--school-blue);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fab {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px;
+            height: 56px;
+            border: none;
+            border-radius: 28px;
+            background: linear-gradient(135deg, var(--school-blue), #164d8d);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(15, 59, 119, 0.35);
+            transition: transform .2s ease, box-shadow .2s ease;
+            will-change: transform;
+        }
+
+        .fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(15, 59, 119, 0.42);
+        }
+
+        .fab .fab-icon {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .fab .fab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 26px;
+            padding: 0 8px;
+            border-radius: 13px;
+            background: var(--school-gold);
+            color: #102a4b;
+            font-size: 12px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .fab-label {
+            display: inline-block;
+        }
+
+        .fab-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 68;
+            background: rgba(12, 35, 70, 0.45);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .22s ease, visibility .22s ease;
+        }
+
+        .fab-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .fab-panel {
+            position: fixed;
+            right: 24px;
+            bottom: 92px;
+            z-index: 70;
+            width: min(340px, calc(100vw - 40px));
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid var(--school-border);
+            border-radius: 20px;
+            box-shadow: 0 18px 48px rgba(15, 59, 119, 0.22);
+            padding: 18px;
+            opacity: 0;
+            transform: translateY(14px) scale(.97);
+            visibility: hidden;
+            transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
+        }
+
+        .fab-panel.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
+
+        .fab-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .fab-panel-header h3 {
+            margin: 0;
+            font-size: 15px;
+            color: var(--school-text);
+        }
+
+        .fab-panel-close {
+            border: none;
+            background: var(--school-blue-soft);
+            color: var(--school-blue);
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .fab-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--school-muted);
+        }
+
+        .fab-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fab-legend i {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .fab-legend .dot-done { background: var(--school-success); }
+        .fab-legend .dot-skip { background: #e7eef7; border: 1px solid var(--school-border); }
+
+        .fab-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .fab-cell {
+            aspect-ratio: 1 / 1;
+            border: 1px solid var(--school-border);
+            border-radius: 12px;
+            background: #f2f6fc;
+            color: var(--school-text);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .15s ease, background .15s ease;
+        }
+
+        .fab-cell:hover {
+            transform: translateY(-2px);
+        }
+
+        .fab-cell.answered {
+            background: var(--school-success);
+            border-color: var(--school-success);
+            color: white;
+        }
+
+        .fab-cell.current {
+            outline: 2px solid var(--school-gold);
+            outline-offset: 2px;
+        }
+
+        .fab-panel-footer {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--school-border);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--school-muted);
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .fab {
+                position: static;
+                height: 56px;
+                width: 56px;
+                padding: 0;
+                justify-content: center;
+                border-radius: 50%;
+            }
+
+            .fab-label {
+                display: none;
+            }
+
+            .fab .fab-count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                min-width: 22px;
+                height: 22px;
+                padding: 0 6px;
+                border-radius: 11px;
+                font-size: 11px;
+                border: 2px solid #fff;
+            }
+
+            .exam-meta-row {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .fab-panel {
+                right: 16px;
+                left: 16px;
+                width: auto;
+                bottom: 92px;
+                max-height: calc(100vh - 128px);
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .login-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .login-panel,
+            .admin-panel,
+            .exam-panel {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .participant-item,
+            .exam-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .participant-actions,
+            .exam-meta {
+                width: 100%;
+                text-align: left;
+            }
+
+            .exam-header { gap: 12px; }
+            .exam-meta { align-items: flex-start; }
+            .exam-progress { align-items: flex-start; flex-direction: column; gap: 8px; }
+            .progress-track { width: 100%; flex: none; }
+            .exam-footer { flex-direction: row; flex-wrap: wrap; }
+            .exam-footer .nav-btn { flex: 1 1 0; max-width: none; min-height: 50px; padding: 12px 14px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <app-navbar style="display: none !important;"></app-navbar>
+
+    <main>
+        <div class="exam-app">
+            <section id="loginScreen" class="screen active">
+                <div class="login-shell">
+                    <div class="login-panel">
+                        <div class="brand-tag">DEMO &middot; Ujian Tengah Semester</div>
+                        <div class="login-kicker">Asesmen Kompetensi Keahlian</div>
+                        <h1>AIJ - XII TKJ</h1>
+                        <p>
+                            Anda akan mengerjakan 20 soal dalam waktu 30 menit.
+                        </p>
+
+                        <form id="loginForm" class="login-form" novalidate>
+                            <div class="input-wrap">
+                                <div class="input-label-row">
+                                    <label for="nisInput">NIS</label>
+                                    <div id="toast" class="toast" role="status" aria-live="polite">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <span class="toast-text">Masukkan NIS</span>
+                                    </div>
+                                </div>
+                                <input id="nisInput" type="text" inputmode="numeric" placeholder="Contoh: 24-12555" required>
+                            </div>
+                            <button type="submit" class="primary-btn">Masuk ke soal</button>
+                        </form>
+
+                        <a href="admin.html" class="admin-entry-btn" title="Masuk Panel Admin">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span>Masuk Panel Admin</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examScreen" class="screen">
+                <div class="exam-panel">
+                    <div class="exam-header">
+                        <div>
+                            <div class="exam-badge">DEMO &middot; Ujian Sekolah</div>
+                            <h2>STS MikroTik</h2>
+                        </div>
+                        <div class="exam-meta">
+                            <span id="studentNameText">Peserta</span>
+                            <span id="studentNisText">NIS: -</span>
+                            <div class="exam-meta-row">
+                                <span id="timerBox" class="timer-box" aria-live="polite">30:00</span>
+                                <button type="button" id="fabButton" class="fab" aria-label="Lihat status jawaban">
+                                    <span class="fab-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                                        </svg>
+                                    </span>
+                                    <span class="fab-label">Jawaban</span>
+                                    <span id="fabCount" class="fab-count">0/20</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="fullscreenNotice" class="fullscreen-notice" role="status">
+                        Ujian berjalan dalam mode layar penuh. Keluar dari layar penuh atau berpindah tab akan dicatat sebagai pelanggaran.
+                    </div>
+
+                    <div class="exam-progress" aria-label="Progress soal">
+                        <span id="questionCounter">Soal 1 dari 20</span>
+                        <div class="progress-track"><div id="progressFill" class="progress-fill" style="width: 5%;"></div></div>
+                    </div>
+
+                    <div id="questionList" class="question-list"></div>
+
+                    <div class="exam-footer">
+                        <button type="button" id="previousQuestionBtn" class="ghost-btn nav-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                            <span class="btn-text">Sebelumnya</span>
+                        </button>
+                        <button type="button" id="nextQuestionBtn" class="primary-btn nav-btn">
+                            <span class="btn-text">Selanjutnya</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <button type="button" id="submitExamBtn" class="primary-btn nav-btn hidden">
+                            <span class="btn-text">Selesai</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div id="confirmBackdrop" class="confirm-backdrop" hidden>
+                        <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+                            <div class="confirm-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                            <h3 id="confirmModalTitle">Yakin sudah selesai?</h3>
+                            <p>Periksa kembali jawaban Anda. Setelah dikirim, ujian dinyatakan selesai dan jawaban tidak dapat diubah.</p>
+                            <div class="confirm-actions">
+                                <button type="button" id="confirmCancelBtn" class="ghost-btn">Batal</button>
+                                <button type="button" id="confirmSubmitBtn" class="primary-btn">Kirim</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="uploadLoading" class="confirm-backdrop" hidden>
+                        <div class="loading-card" role="status" aria-live="polite">
+                            <span class="loading-spinner" aria-hidden="true"></span>
+                            <span>Mengirim jawaban...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="fabOverlay" class="fab-overlay"></div>
+
+                <div id="fabPanel" class="fab-panel" role="dialog" aria-label="Status jawaban soal">
+                    <div class="fab-panel-header">
+                        <h3>Status Jawaban</h3>
+                        <button type="button" id="fabClose" class="fab-panel-close" aria-label="Tutup">✕</button>
+                    </div>
+                    <div class="fab-legend">
+                        <span><i class="dot-done"></i> Selesai</span>
+                        <span><i class="dot-skip"></i> Belum dijawab</span>
+                    </div>
+                    <div id="fabGrid" class="fab-grid"></div>
+                    <div id="fabFooter" class="fab-panel-footer"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const QUESTION_BANK = [
+            { id: 1, question: 'Perangkat lunak yang biasanya digunakan untuk mengelola MikroTik secara GUI adalah...', answer: 'b', options: ['A. Putty', 'B. WinBox', 'C. VLC', 'D. FileZilla', 'E. Notepad++'] },
+            { id: 2, question: 'Fungsi utama Identity pada router MikroTik adalah...', answer: 'a', options: ['A. Menentukan nama unik router agar mudah dikenali', 'B. Mengubah kecepatan CPU', 'C. Menghapus seluruh konfigurasi', 'D. Mengunci port Ethernet', 'E. Menambah bandwidth internet'] },
+            { id: 3, question: 'Username default MikroTik yang sering dipakai saat pertama kali login adalah...', answer: 'b', options: ['A. root', 'B. admin', 'C. user', 'D. supervisor', 'E. guest'] },
+            { id: 4, question: 'Tujuan utama mengganti password router MikroTik adalah...', answer: 'c', options: ['A. Membuat router lebih cepat', 'B. Menambah fungsi router', 'C. Menjaga keamanan akses administrasi', 'D. Membatasi bandwidth client', 'E. Memperbaiki koneksi DNS'] },
+            { id: 5, question: 'Fungsi DNS pada router adalah...', answer: 'b', options: ['A. Mengubah alamat MAC', 'B. Menerjemahkan nama domain menjadi alamat IP', 'C. Membagi koneksi internet', 'D. Mengganti topologi jaringan', 'E. Menyimpan file konfigurasi'] },
+            { id: 6, question: 'Ketika Allow Remote Requests pada DNS aktif, artinya router dapat...', answer: 'b', options: ['A. Menyimpan data secara otomatis', 'B. Melayani permintaan DNS dari client jaringan lokal', 'C. Menghapus file .mp3', 'D. Menjalankan hotspot', 'E. Menyunting tabel routing'] },
+            { id: 7, question: 'NTP Client pada MikroTik berfungsi untuk...', answer: 'a', options: ['A. Menyinkronkan waktu router dengan server waktu', 'B. Mengatur DNS Server', 'C. Mengatur IP Public', 'D. Membuat user profile', 'E. Menghapus firewall rule'] },
+            { id: 8, question: 'Jika router tidak memiliki waktu yang benar, dampaknya adalah...', answer: 'b', options: ['A. Router akan otomatis restart', 'B. Log dan pengaturan jadwal bisa tidak akurat', 'C. Port Ethernet mati', 'D. DNS akan menurun secara otomatis', 'E. Router akan mengubah IP public'] },
+            { id: 9, question: 'Interface yang biasanya digunakan sebagai koneksi internet pada MikroTik adalah...', answer: 'd', options: ['A. ether1', 'B. wlan1', 'C. bridge1', 'D. ether3', 'E. loopback'] },
+            { id: 10, question: 'DHCP Client pada interface WAN berfungsi untuk...', answer: 'a', options: ['A. Menerima IP, gateway, dan DNS otomatis dari ISP', 'B. Melakukan pengaturan IP statis ke client', 'C. Menghapus semua IP lokal', 'D. Menonaktifkan firewall', 'E. Membuat bridge baru'] },
+            { id: 11, question: 'Route default dengan prefix 0.0.0.0/0 berfungsi untuk...', answer: 'a', options: ['A. Mengarahkan lalu lintas yang tidak diketahui ke gateway utama', 'B. Mengunci jaringan lokal', 'C. Menambah user hotspot', 'D. Membatasi alamat MAC', 'E. Menyalakan NTP Client'] },
+            { id: 12, question: 'Tujuan utama NAT Masquerade adalah...', answer: 'a', options: ['A. Mengubah IP privat client menjadi IP publik saat keluar internet', 'B. Menghubungkan dua router tanpa IP', 'C. Mendeteksi virus', 'D. Menentukan waktu router', 'E. Membatasi jumlah user hotspot'] },
+            { id: 13, question: 'Jika router sudah mendapat IP dari ISP, namun client tidak bisa internet, kemungkinan penyebab utama adalah...', answer: 'a', options: ['A. NAT Masquerade belum dibuat', 'B. DHCP Server sudah aktif', 'C. Router kehilangan IP WAN', 'D. DNS terlalu cepat', 'E. Semua interface nonaktif'] },
+            { id: 14, question: 'DHCP Server pada MikroTik biasanya digunakan untuk...', answer: 'b', options: ['A. Menyaring website', 'B. Memberikan IP secara otomatis kepada client', 'C. Mengganti port WAN', 'D. Menutup semua koneksi WiFi', 'E. Menetapkan password router'] },
+            { id: 15, question: 'IP Pool pada MikroTik berfungsi sebagai...', answer: 'a', options: ['A. Daftar IP yang dapat dipinjamkan ke client DHCP', 'B. Area penyimpanan router', 'C. Kumpulan password hotspot', 'D. Nama user WiFi', 'E. Daftar firewall rule'] },
+            { id: 16, question: 'Hotspot di MikroTik biasanya digunakan untuk...', answer: 'b', options: ['A. Menghubungkan router ke internet', 'B. Membuat sistem autentikasi user sebelum akses jaringan', 'C. Menurunkan kecepatan CPU', 'D. Menyimpan semua DNS', 'E. Menentukan alamat gateway ISP'] },
+            { id: 17, question: 'Halaman login yang muncul sebelum user masuk jaringan disebut...', answer: 'a', options: ['A. Captive Portal', 'B. DNS Cache', 'C. NAT Forward', 'D. SSH Tunnel', 'E. Bridge Mode'] },
+            { id: 18, question: 'User Profile pada Hotspot berfungsi untuk...', answer: 'a', options: ['A. Menentukan aturan akses dan pembatasan bandwidth', 'B. Mengubah nomor seri router', 'C. Memperbaiki kabel UTP', 'D. Menentukan gateway default', 'E. Menyimpan hasil ping'] },
+            { id: 19, question: 'Rate Limit pada MikroTik biasanya digunakan untuk...', answer: 'a', options: ['A. Menentukan batas kecepatan upload/download', 'B. Membatasi jumlah user', 'C. Menghidupkan DHCP', 'D. Menyusun daftar menu', 'E. Mengubah alamat IP router'] },
+            { id: 20, question: 'Penggunaan Hotspot akan lebih tepat diterapkan pada jaringan yang memiliki tujuan...', answer: 'a', options: ['A. Mengontrol akses user melalui autentikasi', 'B. Menambah DNS secara manual', 'C. Menghapus packet filter', 'D. Mengaktifkan proxy FTP', 'E. Mengganti gateway ISP'] },
+            { id: 21, question: 'Firewall Filter Chain Input biasanya menangani paket yang ditujukan untuk...', answer: 'a', options: ['A. Router itu sendiri', 'B. Internet luar', 'C. Hanya DNS', 'D. Hanya IP Pool', 'E. Hanya NTP Client'] },
+            { id: 22, question: 'Firewall Filter Chain Forward biasanya memeriksa paket yang...', answer: 'a', options: ['A. Dikirim dari satu segmen ke segmen lain atau internet', 'B. Hanya untuk router', 'C. Hanya untuk DNS', 'D. Berlangsung dalam satu jaringan lokal saja', 'E. Hanya untuk user hotspot'] },
+            { id: 23, question: 'ICMP adalah protokol yang umum dipakai untuk...', answer: 'a', options: ['A. Ping dan pengecekan konektivitas', 'B. Mengatur DHCP server', 'C. Memblokir file MP3', 'D. Menentukan bandwidth', 'E. Menangani DNS cache'] },
+            { id: 24, question: 'Jika administrator ingin mencegah klien melakukan ping ke router, tindakan yang tepat adalah...', answer: 'a', options: ['A. Membuat firewall filter ICMP dengan action drop', 'B. Menambah semua IP ke DHCP', 'C. Menonaktifkan DNS', 'D. Menghapus gateway', 'E. Mematikan semua WiFi'] },
+            { id: 25, question: 'Metode pemblokiran file berukuran besar seperti .mp3 biasanya dilakukan dengan...', answer: 'a', options: ['A. Firewall filter berdasarkan ekstensi atau content', 'B. Mengganti kartu jaringan', 'C. Menghapus DHCP', 'D. Menentukan NTP server', 'E. Menambah IP Pool'] },
+            { id: 26, question: 'Layer7 Protocol di MikroTik berguna untuk...', answer: 'a', options: ['A. Mengenali pola lalu lintas berdasarkan aplikasi atau protokol tertentu', 'B. Mengubah alamat IP', 'C. Menambah DNS client', 'D. Mengatur waktu router', 'E. Menghapus semua route default'] },
+            { id: 27, question: 'TLS Host pada firewall biasanya dipakai untuk memblokir lalu lintas berdasarkan...', answer: 'a', options: ['A. Nama host atau domain yang menggunakan TLS', 'B. Kecepatan processor', 'C. Jumlah port ethernet', 'D. Setting DHCP default', 'E. Koneksi hotspot'] },
+            { id: 28, question: 'Web Proxy pada MikroTik biasanya digunakan untuk...', answer: 'a', options: ['A. Mengelola dan memfilter akses web melalui proxy server', 'B. Menyimpan semua perangkat jaringan', 'C. Mempercepat browser client', 'D. Menyalin file konfigurasi ke USB', 'E. Menyimpan log NTP'] },
+            { id: 29, question: 'Tujuan utama firewall filter pada jaringan sekolah adalah...', answer: 'a', options: ['A. Menjaga keamanan dan membatasi akses yang tidak diinginkan', 'B. Menambah bandwidth siswa', 'C. Mengubah IP router', 'D. Menonaktifkan semua hotspot', 'E. Menjadikan router sebagai DNS'] },
+            { id: 30, question: 'Jika ingin memblokir situs tertentu agar tidak dapat dibuka, langkah yang paling tepat adalah...', answer: 'a', options: ['A. Menggunakan firewall, TLS Host, Layer7, atau proxy filtering', 'B. Mengatur NTP Client', 'C. Mengganti usernames hotspot', 'D. Menambahkan IP Public baru', 'E. Menghapus semua DNS static'] },
+            { id: 31, question: 'Berikut ini yang termasuk fungsi utama RouterOS adalah...', answer: 'a', options: ['A. Menjalankan layanan router, firewall, DHCP, dan hotspot', 'B. Membuat aplikasi desain grafis', 'C. Menyunting video', 'D. Mengolah data spreadsheet', 'E. Menyimpan foto kamera'] },
+            { id: 32, question: 'Pengaturan DNS static pada MikroTik bertujuan untuk...', answer: 'a', options: ['A. Menambahkan pemetaan nama domain ke alamat IP tertentu', 'B. Menyalakan WiFi', 'C. Menambahkan user profile', 'D. Mengubah file .mp3', 'E. Menambah routing OSPF'] },
+            { id: 33, question: 'Jika router menerima IP dari ISP secara otomatis melalui DHCP, berarti router tersebut menggunakan...', answer: 'a', options: ['A. DHCP Client', 'B. DHCP Server', 'C. Static Route', 'D. Proxy Cache', 'E. User Profile'] },
+            { id: 34, question: 'Kalau sebuah jaringan lokal memakai IP 192.168.10.0/24, maka gateway yang umum dipakai untuk router LAN adalah...', answer: 'a', options: ['A. 192.168.10.1', 'B. 192.168.10.255', 'C. 10.0.0.1', 'D. 8.8.8.8', 'E. 255.255.255.0'] },
+            { id: 35, question: 'Perintah atau fitur yang sering digunakan untuk memblokir akses website dengan sekumpulan pola yang mirip aplikasi tertentu adalah...', answer: 'a', options: ['A. Layer7 Protocol', 'B. NTP Client', 'C. DHCP Client', 'D. DNS Static', 'E. WinBox Login'] },
+            { id: 36, question: 'Fungsi utama Web Proxy dalam konteks pembatasan akses adalah...', answer: 'a', options: ['A. Menyaring konten web yang diminta user', 'B. Menambah kapasitas RAM', 'C. Mempercepat pengiriman file .mp3', 'D. Mengubah bridge menjadi switch', 'E. Mengatur alamat NTP'] },
+            { id: 37, question: 'Penanda yang paling tepat untuk mengidentifikasi situs tertentu pada TLS adalah...', answer: 'a', options: ['A. TLS Host', 'B. IP Pool', 'C. DNS Client', 'D. NTP Server', 'E. DHCP Lease'] },
+            { id: 38, question: 'Fungsi NAT pada router adalah untuk...', answer: 'a', options: ['A. Menerjemahkan IP private ke IP public agar bisa ke internet', 'B. Menentukan nama identitas router', 'C. Mengubah perangkat menjadi hotspot', 'D. Menyimpan jadwal NTP', 'E. Menambahkan user profile'] },
+            { id: 39, question: 'Jaringan lokal yang tidak memiliki IP publik dan memerlukan router untuk keluar internet dikenal sebagai...', answer: 'a', options: ['A. Jaringan privat', 'B. Jaringan publik', 'C. Jaringan modem', 'D. Jaringan WiFi hotspot', 'E. Jaringan bridge'] },
+            { id: 40, question: 'Hal yang paling tepat dilakukan saat router baru diaktifkan agar aman adalah...', answer: 'a', options: ['A. Mengganti identitas dan password admin', 'B. Langsung menghapus semua interface', 'C. Memasang firewall untuk semua port', 'D. Menyalakan semua layanan tanpa filter', 'E. Menghapus semua rule NAT'] },
+            { id: 41, question: 'Sistem operasi yang menjadi basis pengembangan MikroTik RouterOS adalah...', answer: 'a', options: ['A. Linux', 'B. Windows', 'C. macOS', 'D. Android', 'E. Chrome OS'] },
+            { id: 42, question: 'Saat pertama terhubung ke router melalui tab Neighbors di WinBox, router diidentifikasi berdasarkan...', answer: 'd', options: ['A. IP publik', 'B. Nomor seri', 'C. Alamat email', 'D. MAC Address', 'E. Nomor absen'] },
+            { id: 43, question: 'Identity default router MikroTik ketika pertama kali digunakan adalah...', answer: 'a', options: ['A. MikroTik', 'B. RouterBOARD', 'C. WinBox', 'D. admin', 'E. ISP'] },
+            { id: 44, question: 'Fungsi Allow Remote Requests pada menu IP → DNS adalah...', answer: 'c', options: ['A. Menambah DNS static', 'B. Menghapus semua DNS', 'C. Mengizinkan router melayani permintaan DNS dari client LAN', 'D. Mengunci alamat IP DNS', 'E. Menonaktifkan NTP Client'] },
+            { id: 45, question: 'RouterBOARD umumnya tidak memiliki baterai RTC, sehingga agar waktu akurat router membutuhkan...', answer: 'b', options: ['A. DHCP Client', 'B. NTP Client (SNTP)', 'C. DNS Client', 'D. Hotspot Server', 'E. Web Proxy'] },
+            { id: 46, question: 'Ketika DHCP Client pada ether3 berhasil mendapatkan IP dari ISP, status interface akan menjadi...', answer: 'b', options: ['A. unbound', 'B. bound', 'C. disabled', 'D. crashed', 'E. blocked'] },
+            { id: 47, question: 'Tujuan mencentang Add Default Route pada pengaturan DHCP Client adalah...', answer: 'e', options: ['A. Menghapus rute statis', 'B. Mengunci IP LAN', 'C. Menambah user hotspot', 'D. Mengaktifkan proxy', 'E. Menambahkan rute default otomatis menuju gateway ISP'] },
+            { id: 48, question: 'Flag "DA" atau "DAS" pada entri rute di IP → Routes menunjukkan bahwa rute tersebut...', answer: 'a', options: ['A. Ditambahkan otomatis/dinamis oleh DHCP Client dan sedang aktif', 'B. Dikonfigurasi manual oleh admin', 'C. Rute menuju internet rusak', 'D. Rute yang menonaktifkan internet', 'E. Rute khusus ke DNS server'] },
+            { id: 49, question: 'Interface yang pada modul digunakan sebagai WAN untuk koneksi internet dari ISP adalah...', answer: 'c', options: ['A. ether1', 'B. ether2', 'C. ether3', 'D. ether4', 'E. bridge1'] },
+            { id: 50, question: 'Alamat IP static gateway LAN pada interface ether4 dalam modul adalah...', answer: 'e', options: ['A. 192.168.1.1/24', 'B. 10.0.0.1/24', 'C. 172.16.0.1/24', 'D. 8.8.8.8/32', 'E. 172.32.xx.1/24'] },
+            { id: 51, question: 'Rentang alamat IP yang dibagikan DHCP Server kepada klien dikelola pada menu...', answer: 'c', options: ['A. DNS Static', 'B. User Profiles', 'C. IP Pool', 'D. NAT', 'E. Layer7 Protocol'] },
+            { id: 52, question: 'Pada modul, profile-siswa pada Hotspot User Profiles diberi Rate Limit (rx/tx) sebesar...', answer: 'b', options: ['A. 10M/10M', 'B. 5M/5M', 'C. 15M/15M', 'D. 1M/1M', 'E. 100M/100M'] },
+            { id: 53, question: 'Rate Limit (rx/tx) yang diberikan untuk profile-guru pada modul adalah...', answer: 'a', options: ['A. 10M/10M', 'B. 5M/5M', 'C. 3M/3M', 'D. 1M/1M', 'E. 20M/20M'] },
+            { id: 54, question: 'TLS Host pada firewall memeriksa...', answer: 'b', options: ['A. Kecepatan CPU', 'B. Nama host/domain pada header SNI saat koneksi HTTPS/TLS', 'C. Isi file audio', 'D. Alamat MAC client', 'E. Jumlah port ethernet'] },
+            { id: 55, question: 'Metode paling praktis dan ringan untuk memblokir string teks seperti ".mp3" pada paket HTTP adalah...', answer: 'c', options: ['A. TLS Host', 'B. NTP Client', 'C. Firewall Content', 'D. DNS Static', 'E. Hotspot User'] },
+            { id: 56, question: 'Aturan NAT dstnat yang mengarahkan lalu lintas HTTP client ke Web Proxy port 8080 biasanya memfilter protokol...', answer: 'a', options: ['A. TCP', 'B. UDP', 'C. ICMP', 'D. FTP', 'E. SNMP'] },
+            { id: 57, question: 'Agar lalu lintas port 80 client mengalir ke Web Proxy internal, pada NAT dstnat digunakan Action...', answer: 'b', options: ['A. masquerade', 'B. redirect', 'C. drop', 'D. accept', 'E. jump'] },
+            { id: 58, question: 'Regexp "^.*\\.mp3.*$" pada Layer7 Protocol digunakan untuk mencocokkan...', answer: 'd', options: ['A. Alamat IP tujuan', 'B. Username hotspot', 'C. MAC address', 'D. Pola string yang mengandung ekstensi .mp3', 'E. Identity router'] },
+            { id: 59, question: 'Untuk memblokir situs berbasis HTTPS tanpa mendekripsi data, metode yang paling ampuh adalah...', answer: 'a', options: ['A. TLS Host', 'B. DHCP Server', 'C. IP Pool', 'D. NTP Client', 'E. WinBox Neighbors'] },
+            { id: 60, question: 'Pada Web Proxy Access, untuk memblokir situs spesifik dengan Dst. Host tertentu, Action yang dipilih adalah...', answer: 'b', options: ['A. drop', 'B. deny', 'C. accept', 'D. redirect', 'E. masquerade'] },
+            { id: 61, question: 'Menu di WinBox untuk membuat password Wi-Fi (Security Profile) adalah...', answer: 'b', options: ['A. IP → DHCP Server', 'B. Wireless → Security Profiles', 'C. System → Identity', 'D. IP → Firewall → NAT', 'E. IP → Routes'] },
+            { id: 62, question: 'Pada Security Profile WLAN, Mode yang dipilih agar Wi-Fi menggunakan kata sandi WPA2 adalah...', answer: 'a', options: ['A. dynamic keys', 'B. static keys', 'C. none', 'D. open', 'E. 802.1x'] },
+            { id: 63, question: 'Panjang minimal WPA2 Pre-Shared Key (password Wi-Fi) pada Security Profile adalah...', answer: 'b', options: ['A. 4 karakter', 'B. 8 karakter', 'C. 12 karakter', 'D. 16 karakter', 'E. 20 karakter'] },
+            { id: 64, question: 'Agar router dapat memancarkan sinyal Wi-Fi ke banyak perangkat, Mode interface wlan1 diubah menjadi...', answer: 'c', options: ['A. station', 'B. alignment only', 'C. ap bridge', 'D. nstreme slave', 'E. wds slave'] },
+            { id: 65, question: 'Nama jaringan Wi-Fi yang dipancarkan oleh router dikenal dengan istilah...', answer: 'b', options: ['A. MAC', 'B. SSID', 'C. PSK', 'D. Lease', 'E. Pool'] },
+            { id: 66, question: 'Pada contoh modul WLAN, alamat IP yang dipasang pada interface wlan adalah...', answer: 'a', options: ['A. 192.168.33.1/25', 'B. 192.168.1.1/24', 'C. 10.10.10.1/24', 'D. 172.16.0.1/16', 'E. 192.168.33.254/25'] },
+            { id: 67, question: 'Wizard yang dipakai untuk mengonfigurasi DHCP Server pada interface wlan adalah...', answer: 'd', options: ['A. Hotspot Setup', 'B. Quick Set', 'C. Neighbors', 'D. DHCP Setup', 'E. Backup Setup'] },
+            { id: 68, question: 'Pada wizard DHCP Setup WLAN, Addresses to Give Out diisi rentang alamat...', answer: 'a', options: ['A. 192.168.33.2 - 192.168.33.254', 'B. 192.168.33.0 - 192.168.33.1', 'C. 8.8.8.8 - 8.8.4.4', 'D. 172.32.1.1 - 172.32.1.70', 'E. 192.168.33.255 - 192.168.33.300'] },
+            { id: 69, question: 'Lease Time default pada wizard DHCP Setup adalah...', answer: 'b', options: ['A. 1 jam', 'B. 3 jam', 'C. 24 jam', 'D. 7 hari', 'E. 1 menit'] },
+            { id: 70, question: 'Untuk melihat daftar perangkat klien yang terhubung ke Wi-Fi, menu yang dibuka adalah...', answer: 'e', options: ['A. IP → Routes', 'B. IP → Firewall', 'C. Wireless → Security Profiles', 'D. System → Users', 'E. IP → DHCP Server, tab Leases'] },
+            { id: 71, question: 'Klien yang terhubung ke Wi-Fi pada contoh konfigurasi wlan akan mendapat alamat IP dalam rentang...', answer: 'a', options: ['A. 192.168.33.x', 'B. 8.8.8.x', 'C. 172.32.x.x', 'D. 10.0.0.x', 'E. 192.168.32.x'] },
+            { id: 72, question: 'Agar klien dapat internet setelah terhubung ke SSID Wi-Fi, selain memancarkan sinyal diperlukan...', answer: 'b', options: ['A. firewall dengan action drop', 'B. pemasangan IP Address di wlan dan pengaktifan DHCP Server', 'C. mematikan Security Profile', 'D. mengganti Identity router', 'E. menonaktifkan NAT'] },
+            { id: 73, question: 'MikroTik adalah perusahaan yang berasal dari negara...', answer: 'd', options: ['A. Jerman', 'B. Jepang', 'C. Amerika Serikat', 'D. Latvia', 'E. Tiongkok'] },
+            { id: 74, question: 'Produk utama MikroTik terdiri atas...', answer: 'a', options: ['A. RouterOS dan RouterBOARD', 'B. Windows dan Linux', 'C. Cisco dan Juniper', 'D. hAP dan CCR', 'E. WinBox dan Putty'] },
+            { id: 75, question: 'Seri RouterBOARD yang cocok untuk kebutuhan jaringan besar / ISP adalah...', answer: 'b', options: ['A. RB750', 'B. CCR', 'C. hAP', 'D. Audience', 'E. hEX'] },
+            { id: 76, question: 'Tipe RouterBOARD yang menggabungkan fungsi switching dan routing adalah...', answer: 'd', options: ['A. hAP ac2', 'B. RB750', 'C. Chateau', 'D. CRS', 'E. Audience'] },
+            { id: 77, question: 'Pengelolaan bandwidth pada RouterOS dilakukan menggunakan mekanisme...', answer: 'c', options: ['A. DNS Static', 'B. IP Pool', 'C. Queue (HTB/PCQ)', 'D. Security Profile', 'E. Neighbor Discovery'] },
+            { id: 78, question: 'Pada konfigurasi dasar di referensi, komputer dihubungkan ke router melalui port...', answer: 'a', options: ['A. ether2 (LAN)', 'B. ether1 (WAN)', 'C. ether4', 'D. ether5', 'E. wlan1'] },
+            { id: 79, question: 'Teknik yang memungkinkan banyak perangkat LAN berbagi satu IP publik untuk akses internet adalah...', answer: 'b', options: ['A. DHCP Pool', 'B. NAT', 'C. Layer7 Protocol', 'D. SNTP', 'E. WinBox'] },
+            { id: 80, question: 'DNS Redirect pada NAT berfungsi untuk...', answer: 'e', options: ['A. mempercepat video streaming', 'B. memblokir file .mp3', 'C. menambah IP publik', 'D. menyimpan log login', 'E. memaksa lalu lintas DNS klien lewat MikroTik agar tidak bisa mengganti DNS manual'] }
+        ];
+
+        const STORAGE_KEYS = {
+            currentSession: 'mikrotikExamCurrentSession'
+        };
+
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwGZboLzpJSjP0vUyXaKMSUibDgFjzaoXAm6cCY_SEI71s0xq2ZCUdRxdxJcPBZKMHs/exec';
+
+        const STUDENT_QUESTION_COUNT = 20;
+        const EXAM_DURATION_MINUTES = 30;
+
+        const loginScreen = document.getElementById('loginScreen');
+        const examScreen = document.getElementById('examScreen');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const adminAuthBox = document.getElementById('adminAuthBox');
+        const answerKeyBox = document.getElementById('answerKeyBox');
+        const participantList = document.getElementById('participantList');
+
+        let adminLoggedIn = false;
+        let currentStudent = null;
+        let participantsCache = [];
+        let examTimerId = null;
+        let examSubmitting = false;
+        let leavingExam = false;
+        let currentQuestionIndex = 0;
+        const MAX_CHEATING_EVENTS = 3;
+
+        async function apiRequest(action, payload = {}) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            let response;
+
+            try {
+                response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action, ...payload }),
+                    signal: controller.signal
+                });
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('Koneksi ke server habis waktu. Periksa deployment Apps Script dan koneksi internet.');
+                }
+                throw new Error('Tidak dapat terhubung ke server Google Sheets. Buka halaman melalui Live Server, bukan file://.');
+            } finally {
+                clearTimeout(timeoutId);
+            }
+
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (error) {
+                throw new Error('Deployment Apps Script tidak mengembalikan JSON. Pastikan akses Web App disetel Anyone dan gunakan URL /exec terbaru.');
+            }
+
+            if (!response.ok) throw new Error(`Server mengembalikan HTTP ${response.status}.`);
+            if (!result.ok) throw new Error(result.error || 'Request Google Sheets gagal.');
+            return result.data;
+        }
+
+        async function loadParticipants() {
+            participantsCache = await apiRequest('listParticipants');
+            return participantsCache;
+        }
+
+        function getParticipants() {
+            return participantsCache;
+        }
+
+        function getStudentSession() {
+            const saved = localStorage.getItem(STORAGE_KEYS.currentSession);
+            if (!saved) return null;
+
+            try {
+                return JSON.parse(saved);
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function setStudentSession(data) {
+            localStorage.setItem(STORAGE_KEYS.currentSession, JSON.stringify(data));
+        }
+
+        function saveCurrentAnswer(value) {
+            const session = getStudentSession();
+            if (!session) return;
+            session.answers = session.answers || {};
+            session.answers[String(session.questionIds[currentQuestionIndex])] = value;
+            setStudentSession(session);
+            renderFab();
+        }
+
+        async function recordCheating(reason) {
+            if (!currentStudent || examSubmitting) return;
+
+            let violationCount = 0;
+            try {
+                const result = await apiRequest('saveViolation', {
+                    nis: currentStudent.nis,
+                    reason,
+                    timestamp: Date.now()
+                });
+                violationCount = result.count;
+                if (violationCount > MAX_CHEATING_EVENTS) {
+                    await apiRequest('updateStatus', { nis: currentStudent.nis, status: 'Diblokir' });
+                    examSubmitting = true;
+                    localStorage.removeItem(STORAGE_KEYS.currentSession);
+                    clearInterval(examTimerId);
+                    if (document.fullscreenElement && document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    }
+                    currentStudent = null;
+                    alert('Batas pelanggaran tercapai. Ujian dihentikan dan akun dikunci. Hubungi admin untuk reset.');
+                    returnToLogin();
+                    return;
+                }
+            } catch (error) {
+                console.error('Gagal menyimpan pelanggaran:', error);
+            }
+
+            const notice = document.getElementById('fullscreenNotice');
+            notice.textContent = `Peringatan ${violationCount || 1}/${MAX_CHEATING_EVENTS}: ${reason}.`;
+            notice.style.borderColor = '#fecdd3';
+            notice.style.background = '#fff1f2';
+            notice.style.color = '#b91c1c';
+        }
+
+        function requestExamFullscreen() {
+            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    const notice = document.getElementById('fullscreenNotice');
+                    notice.textContent = 'Mode fullscreen tidak dapat diaktifkan. Silakan aktifkan fullscreen dari browser sebelum melanjutkan.';
+                });
+            }
+        }
+
+        function renderAnswerKey() {
+            document.getElementById('answerKeyList').innerHTML = QUESTION_BANK
+                .map((question) => `<li><strong>${question.id}.</strong> ${question.answer.toUpperCase()}</li>`)
+                .join('');
+        }
+
+        function hashString(value) {
+            let hash = 0;
+            for (let i = 0; i < value.length; i++) {
+                hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+            }
+            return hash;
+        }
+
+        function normalizeNis(value) {
+            return String(value || '').trim().replace(/\D/g, '');
+        }
+
+        function seedRandom(seedValue) {
+            let state = seedValue >>> 0;
+            return function () {
+                state = (state + 0x6D2B79F5) >>> 0;
+                let t = state;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function getAssignedQuestionIds(nis) {
+            const ids = QUESTION_BANK.map((item) => item.id);
+            const rand = seedRandom(hashString(String(nis)));
+
+            for (let i = ids.length - 1; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                [ids[i], ids[j]] = [ids[j], ids[i]];
+            }
+
+            return ids.slice(0, STUDENT_QUESTION_COUNT);
+        }
+
+        function buildQuestionHtml(question, index) {
+            const session = getStudentSession();
+            const savedAnswer = session?.answers?.[String(question.id)] || '';
+            const optionsHtml = question.options.map((option, optionIndex) => {
+                const optionKey = String.fromCharCode(97 + optionIndex);
+                const optionText = option;
+                const inputName = `q${question.id}`;
+                const inputId = `${inputName}_${optionKey}`;
+                return `
+                    <div class="option">
+                        <input type="radio" name="${inputName}" id="${inputId}" value="${optionKey}" ${savedAnswer === optionKey ? 'checked' : ''}>
+                        <label for="${inputId}">${optionText}</label>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="question-card">
+                    <div class="question-top">
+                        <span class="question-no">${index + 1}</span>
+                        <h3>${question.question}</h3>
+                    </div>
+                    <div class="options">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showScreen(targetScreen) {
+            loginScreen.classList.toggle('active', targetScreen === 'login');
+            examScreen.classList.toggle('active', targetScreen === 'exam');
+            const navbar = document.querySelector('app-navbar');
+            if (navbar) {
+                navbar.classList.toggle('exam-hidden', targetScreen === 'exam');
+                navbar.hidden = targetScreen === 'exam';
+            }
+        }
+
+        function renderParticipantList() {
+            const participants = getParticipants();
+            participantList.innerHTML = '';
+
+            if (!participants.length) {
+                participantList.innerHTML = '<tr><td colspan="6" style="padding: 18px; text-align: center; color: var(--school-muted);">Belum ada peserta yang terdaftar.</td></tr>';
+                return;
+            }
+
+            participants.forEach((participant, index) => {
+                const item = document.createElement('tr');
+                const statusText = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
+                const statusClass = participant.loggedIn ? 'waiting' : participant.lastScore !== undefined ? 'done' : 'waiting';
+                const lastScoreText = participant.lastScore !== undefined ? `${participant.lastScore}%` : '-';
+
+                item.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${participant.name}</strong></td>
+                    <td>${participant.nis}</td>
+                    <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+                    <td class="score-value">${lastScoreText}</td>
+                    <td><button type="button" class="reset-btn" data-reset-nis="${participant.nis}">Reset Login</button></td>
+                `;
+
+                participantList.appendChild(item);
+            });
+
+            participantList.querySelectorAll('[data-reset-nis]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    resetParticipantLogin(button.dataset.resetNis);
+                });
+            });
+        }
+
+        async function loginStudent(nis) {
+            const trimmedNis = String(nis).trim();
+            if (!trimmedNis) {
+                alert('NIS tidak boleh kosong.');
+                return;
+            }
+
+            let participants;
+            try {
+                participants = await loadParticipants();
+            } catch (error) {
+                alert(`Gagal terhubung ke database ujian: ${error.message}`);
+                return;
+            }
+            const nisKey = normalizeNis(trimmedNis);
+            let participant = participants.find((item) => normalizeNis(item.nis) === nisKey);
+
+            if (!participant) {
+                alert('NIS belum terdaftar. Silakan hubungi admin untuk mendaftarkan peserta.');
+                return;
+            }
+
+            if (participant.loggedIn) {
+                alert('Peserta ini sedang memiliki sesi ujian aktif. Admin perlu mereset login terlebih dahulu jika sesi terputus.');
+                return;
+            }
+
+            if (participant.blocked) {
+                alert('Akun peserta terkunci karena melebihi batas pelanggaran. Hubungi admin untuk reset login.');
+                return;
+            }
+
+            if (participant.lastScore !== undefined) {
+                alert('Anda sudah menyelesaikan ujian dan nilai sudah tercatat. Tidak bisa mengulang ujian.');
+                return;
+            }
+
+            currentStudent = participant;
+            const assignedIds = getAssignedQuestionIds(trimmedNis);
+            const session = {
+                nis: trimmedNis,
+                name: participant.name,
+                questionIds: assignedIds,
+                answers: {},
+                startedAt: new Date().toISOString(),
+                endsAt: Date.now() + EXAM_DURATION_MINUTES * 60 * 1000
+            };
+
+            participant.loggedIn = true;
+            try {
+                await apiRequest('updateStatus', { nis: trimmedNis, status: 'Sedang ujian', startedAt: session.startedAt });
+            } catch (error) {
+                console.warn('Status awal belum tersimpan ke Google Sheets. Pastikan deployment memakai Code.gs terbaru:', error.message);
+            }
+            setStudentSession(session);
+            currentQuestionIndex = 0;
+
+            renderExam();
+            showScreen('exam');
+            requestExamFullscreen();
+        }
+
+        function renderExam() {
+            const session = getStudentSession();
+            if (!session || !currentStudent) {
+                showScreen('login');
+                return;
+            }
+
+            document.getElementById('studentNameText').textContent = currentStudent.name;
+            document.getElementById('studentNisText').textContent = `NIS: ${currentStudent.nis}`;
+            showCurrentQuestion();
+            renderFab();
+            startExamTimer(session.endsAt);
+        }
+
+        function showCurrentQuestion() {
+            const session = getStudentSession();
+            if (!session) return;
+            session.currentIndex = currentQuestionIndex;
+            setStudentSession(session);
+
+            const total = session.questionIds.length;
+            const questionId = session.questionIds[currentQuestionIndex];
+            const question = QUESTION_BANK.find((item) => item.id === questionId);
+            document.getElementById('questionList').innerHTML = buildQuestionHtml(question, currentQuestionIndex);
+            document.getElementById('questionCounter').textContent = `Soal ${currentQuestionIndex + 1} dari ${total}`;
+            document.getElementById('progressFill').style.width = `${((currentQuestionIndex + 1) / total) * 100}%`;
+            document.getElementById('previousQuestionBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('previousQuestionBtn').style.opacity = currentQuestionIndex === 0 ? '.5' : '1';
+            document.getElementById('nextQuestionBtn').classList.toggle('hidden', currentQuestionIndex === total - 1);
+            document.getElementById('submitExamBtn').classList.toggle('hidden', currentQuestionIndex !== total - 1);
+            document.querySelectorAll('#questionList input[type="radio"]').forEach((input) => {
+                input.addEventListener('change', () => saveCurrentAnswer(input.value));
+            });
+            renderFab();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderFab() {
+            const session = getStudentSession();
+            const grid = document.getElementById('fabGrid');
+            const count = document.getElementById('fabCount');
+            const footer = document.getElementById('fabFooter');
+            if (!session || !grid || !currentStudent) return;
+
+            const ids = session.questionIds;
+            const answeredCount = ids.filter((id) => session.answers?.[String(id)]).length;
+            count.textContent = `${answeredCount}/${ids.length}`;
+            footer.textContent = `Soal ${currentQuestionIndex + 1} dari ${ids.length} · ${ids.length - answeredCount} belum dijawab`;
+
+            grid.innerHTML = ids.map((id, index) => {
+                const answered = !!session.answers?.[String(id)];
+                const current = index === currentQuestionIndex;
+                return (
+                    `<button type="button" class="fab-cell ${answered ? 'answered' : ''} ${current ? 'current' : ''}" ` +
+                    `data-qindex="${index}" aria-label="Soal ${index + 1}${answered ? ', sudah dijawab' : ', belum dijawab'}">${index + 1}</button>`
+                );
+            }).join('');
+
+            grid.querySelectorAll('.fab-cell').forEach((cell) => {
+                cell.addEventListener('click', () => {
+                    currentQuestionIndex = Number(cell.dataset.qindex);
+                    showCurrentQuestion();
+                    closeFabPanel();
+                });
+            });
+        }
+
+        function openFabPanel() {
+            renderFab();
+            document.getElementById('fabOverlay').classList.add('show');
+            document.getElementById('fabPanel').classList.add('show');
+        }
+
+        function toggleFabPanel() {
+            const panel = document.getElementById('fabPanel');
+            if (panel.classList.contains('show')) {
+                closeFabPanel();
+            } else {
+                openFabPanel();
+            }
+        }
+
+        function closeFabPanel() {
+            document.getElementById('fabOverlay').classList.remove('show');
+            document.getElementById('fabPanel').classList.remove('show');
+        }
+
+        function restoreExamSession() {
+            const session = getStudentSession();
+            if (!session || !Array.isArray(session.questionIds) || !session.questionIds.length) return;
+
+            const index = Number.isInteger(session.currentIndex) ? session.currentIndex : 0;
+            currentQuestionIndex = Math.min(Math.max(index, 0), session.questionIds.length - 1);
+            currentStudent = { nis: session.nis, name: session.name };
+            examSubmitting = false;
+            showScreen('exam');
+            renderExam();
+            requestExamFullscreen();
+
+            const reenterFullscreen = () => {
+                if (document.fullscreenElement) {
+                    window.removeEventListener('pointerdown', reenterFullscreen);
+                    window.removeEventListener('keydown', reenterFullscreen);
+                    return;
+                }
+                if (currentStudent && examScreen.classList.contains('active') && !examSubmitting) {
+                    requestExamFullscreen();
+                }
+            };
+            window.addEventListener('pointerdown', reenterFullscreen);
+            window.addEventListener('keydown', reenterFullscreen);
+
+            loadParticipants()
+                .catch(() => {})
+                .then(() => {
+                    const fresh = getParticipants().find((item) => item.nis === session.nis);
+                    if (fresh && fresh.blocked) {
+                        examSubmitting = true;
+                        localStorage.removeItem(STORAGE_KEYS.currentSession);
+                        clearInterval(examTimerId);
+                        currentStudent = null;
+                        window.removeEventListener('pointerdown', reenterFullscreen);
+                        window.removeEventListener('keydown', reenterFullscreen);
+                        alert('Akun peserta terkunci. Hubungi admin.');
+                        returnToLogin();
+                    }
+                });
+        }
+
+        function startExamTimer(endsAt) {
+            clearInterval(examTimerId);
+            const timerBox = document.getElementById('timerBox');
+
+            const updateTimer = () => {
+                const remaining = Math.max(0, endsAt - Date.now());
+                const totalSeconds = Math.ceil(remaining / 1000);
+                const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+                timerBox.textContent = `${minutes}:${seconds}`;
+                timerBox.classList.toggle('warning', totalSeconds <= 300);
+
+                if (remaining <= 0) {
+                    clearInterval(examTimerId);
+                    alert('Waktu ujian telah habis. Jawaban akan dikumpulkan otomatis.');
+                    submitExam(true);
+                }
+            };
+
+            updateTimer();
+            examTimerId = setInterval(updateTimer, 1000);
+        }
+
+        function toggleAdminAuth(showAuth) {
+            adminAuthBox.classList.toggle('hidden', !showAuth);
+            adminDashboard.classList.toggle('inline-hidden', showAuth);
+        }
+
+        function ensureAdminAccess() {
+            if (!adminLoggedIn) {
+                alert('Admin belum login.');
+                return false;
+            }
+            return true;
+        }
+
+        function resetParticipantLogin(nis) {
+            const participants = getParticipants();
+            const target = participants.find((item) => item.nis === nis);
+            if (!target) return;
+
+            target.loggedIn = false;
+            target.lastScore = undefined;
+            setParticipants(participants);
+
+            const session = getStudentSession();
+            if (session && session.nis === nis) {
+                localStorage.removeItem(STORAGE_KEYS.currentSession);
+            }
+
+            renderParticipantList();
+            alert(`Login peserta NIS ${nis} berhasil direset.`);
+        }
+
+        function resetAllParticipantLogin() {
+            const participants = getParticipants();
+            participants.forEach((participant) => {
+                participant.loggedIn = false;
+                participant.lastScore = undefined;
+            });
+            setParticipants(participants);
+            localStorage.removeItem(STORAGE_KEYS.currentSession);
+            renderParticipantList();
+            alert('Semua login peserta telah direset.');
+        }
+
+        async function submitExam(isAutomatic = false) {
+            if (examSubmitting) return;
+            examSubmitting = true;
+            const session = getStudentSession();
+            if (!session) {
+                alert('Sesi ujian tidak ditemukan.');
+                examSubmitting = false;
+                return;
+            }
+
+            const questionIds = session.questionIds;
+            let correct = 0;
+
+            questionIds.forEach((questionId) => {
+                const selectedValue = session.answers?.[String(questionId)];
+                if (!selectedValue) return;
+
+                const chosen = selectedValue.toLowerCase();
+                const question = QUESTION_BANK.find((item) => item.id === questionId);
+                if (chosen === question.answer) {
+                    correct++;
+                }
+            });
+
+            const total = questionIds.length;
+            const score = Math.round((correct / total) * 100);
+
+            const uploadLoading = document.getElementById('uploadLoading');
+            uploadLoading.hidden = false;
+
+            try {
+                await apiRequest('saveResult', {
+                    nis: currentStudent.nis,
+                    score,
+                    startedAt: session.startedAt
+                });
+            } catch (error) {
+                uploadLoading.hidden = true;
+                examSubmitting = false;
+                alert(`Gagal mengirim jawaban ke server: ${error.message}. Silakan coba kirim ulang.`);
+                return;
+            }
+
+            clearInterval(examTimerId);
+            returnToLogin();
+        }
+
+        function returnToLogin() {
+            leavingExam = true;
+            examSubmitting = true;
+            currentStudent = null;
+            localStorage.removeItem(STORAGE_KEYS.currentSession);
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+            setTimeout(() => location.reload(), 100);
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (leavingExam) return;
+            if (currentStudent && examScreen.classList.contains('active') && !document.fullscreenElement && !examSubmitting) {
+                recordCheating('Keluar dari mode fullscreen');
+                alert('Dilarang keluar mode layar penuh, Anda akan dikembalikan ke layar penuh.');
+                requestExamFullscreen();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (leavingExam) return;
+            if (currentStudent && examScreen.classList.contains('active') && document.hidden && !examSubmitting) {
+                recordCheating('Beralih tab atau jendela selama ujian');
+            }
+        });
+
+        document.getElementById('previousQuestionBtn').addEventListener('click', () => {
+            if (currentQuestionIndex === 0) return;
+            currentQuestionIndex--;
+            showCurrentQuestion();
+        });
+
+        document.getElementById('nextQuestionBtn').addEventListener('click', () => {
+            const session = getStudentSession();
+            if (!session || currentQuestionIndex >= session.questionIds.length - 1) return;
+            currentQuestionIndex++;
+            showCurrentQuestion();
+        });
+
+        document.getElementById('fabButton').addEventListener('click', toggleFabPanel);
+        document.getElementById('fabOverlay').addEventListener('click', closeFabPanel);
+        document.getElementById('fabClose').addEventListener('click', closeFabPanel);
+
+        function exportScoresCsv() {
+            if (!ensureAdminAccess()) return;
+
+            const rows = [['No', 'Nama Peserta', 'NIS', 'Status', 'Nilai']];
+            getParticipants().forEach((participant, index) => {
+                const status = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
+                rows.push([index + 1, participant.name, participant.nis, status, participant.lastScore !== undefined ? participant.lastScore : '']);
+            });
+
+            const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `nilai-sts-mikrotik-${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function addParticipant(name, nis) {
+            const trimmedName = name.trim();
+            const trimmedNis = String(nis).trim();
+
+            if (!trimmedName || !trimmedNis) {
+                alert('Nama dan NIS harus diisi.');
+                return;
+            }
+
+            const participants = getParticipants();
+            const duplicate = participants.find((item) => item.nis === trimmedNis);
+            if (duplicate) {
+                alert(`NIS ${trimmedNis} sudah terdaftar.`);
+                return;
+            }
+
+            participants.push({
+                nis: trimmedNis,
+                name: trimmedName,
+                loggedIn: false,
+                lastScore: undefined
+            });
+
+            setParticipants(participants);
+            renderParticipantList();
+            document.getElementById('participantNameInput').value = '';
+            document.getElementById('participantNisInput').value = '';
+            alert(`Peserta ${trimmedName} dengan NIS ${trimmedNis} berhasil ditambahkan.`);
+        }
+
+        let toastTimer = null;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.querySelector('.toast-text').textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const nis = document.getElementById('nisInput').value.trim();
+            if (!nis) {
+                showToast('Masukkan NIS');
+                document.getElementById('nisInput').focus();
+                return;
+            }
+            const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Menghubungkan...';
+            requestExamFullscreen();
+            try {
+                await loginStudent(nis);
+            } catch (error) {
+                alert(`Login gagal: ${error.message}`);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Masuk ke soal';
+            }
+        });
+
+        const confirmBackdrop = document.getElementById('confirmBackdrop');
+        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+        const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+
+        document.getElementById('submitExamBtn').addEventListener('click', () => {
+            confirmBackdrop.hidden = false;
+        });
+
+        confirmCancelBtn.addEventListener('click', () => {
+            confirmBackdrop.hidden = true;
+        });
+
+        confirmSubmitBtn.addEventListener('click', () => {
+            confirmBackdrop.hidden = true;
+            submitExam();
+        });
+
+        restoreExamSession();
+
+    </script>
+</body>
+</html>

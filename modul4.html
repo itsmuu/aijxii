@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 4: Firewall Filter Rules, Pemblokiran File & Web</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Dynamic Navbar Component -->
+    <script src="navbar.js" defer></script>
+
+    <style>
+        /* Styling Khusus Halaman Modul Materi */
+        .content-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .module-header {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .module-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .module-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .section-box {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Teori Items */
+        .theory-item {
+            margin-bottom: 20px;
+        }
+
+        .theory-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .theory-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+        }
+
+        .theory-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .theory-item ul {
+            margin: 8px 0 0 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Langkah Kerja Cards */
+        .step-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .step-list {
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .sub-step-list {
+            margin: 6px 0 6px 18px;
+            list-style-type: disc;
+        }
+
+        /* UI Badges & Formatting */
+        .ui-path {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .note-callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Otomatis dari navbar.js -->
+    <app-navbar></app-navbar>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-container">
+            
+            <!-- Header Modul -->
+            <div class="module-header">
+                <span class="module-badge">Modul 04</span>
+                <h1 class="module-title">Firewall Filter Rules, Pemblokiran File & Web</h1>
+                <p class="module-desc">
+                    Modul ini membahas pengamanan jaringan menggunakan Firewall Filter Rules pada MikroTik, meliputi pembatasan lalu lintas ICMP (Ping) ke router maupun antar-klien, pemblokiran unduhan file (.mp3), serta pemblokiran situs web (seperti tkjapps.smksabdev.my.id) menggunakan TLS Host, Layer7 Protocol, dan Web Proxy.
+                </p>
+            </div>
+
+            <!-- BAGIAN A: LANDASAN TEORI -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    A. Landasan Teori
+                </h2>
+
+                <div class="theory-item">
+                    <h4>1. Firewall Filter Rules (Chain Input vs Forward)</h4>
+                    <p>
+                        Firewall Filter bekerja memeriksa setiap paket data yang melintasi router. Pemilihan <strong>Chain</strong> menentukan titik pemeriksaan paket:
+                    </p>
+                    <ul>
+                        <li><strong>Chain Input:</strong> Menangani paket data yang ditujukan langsung ke router (contoh: ping dari klien ke IP Gateway router).</li>
+                        <li><strong>Chain Forward:</strong> Menangani paket data yang melintasi router dari satu segmen/klien menuju segmen/klien lain atau ke internet.</li>
+                    </ul>
+                </div>
+
+                <div class="theory-item">
+                    <h4>2. Pemblokiran ICMP (Ping)</h4>
+                    <p>
+                        <strong>ICMP (Internet Control Message Protocol)</strong> digunakan untuk pengujian koneksi (<em>ping</em>). Memblokir paket ICMP dengan aksi <strong>Action: Drop</strong> mencegah perangkat klien melakukan tes ping tanpa memutus akses ke layanan jaringan lainnya seperti web atau HTTPS.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>3. Metode Pemblokiran Ekstensi File (.mp3)</h4>
+                    <p>
+                        MikroTik menyediakan beberapa metode untuk memfilter lalu lintas berdasarkan tipe/ekstensi file:
+                    </p>
+                    <ul>
+                        <li><strong>Layer7 Protocol:</strong> Menggunakan pencocokan pola ekspresi reguler (<em>Regular Expression / Regexp</em>) pada muatan paket data.</li>
+                        <li><strong>Firewall Content:</strong> Memeriksa string teks tertentu (contoh: <code>.mp3</code>) pada header paket data HTTP secara lebih praktis dan ringan.</li>
+                        <li><strong>Web Proxy Access:</strong> Memanfaatkan proxy internal MikroTik untuk memfilter permintaan URL/Path yang mengandung kata kunci file sebelum sampai ke klien.</li>
+                    </ul>
+                </div>
+
+                <div class="theory-item">
+                    <h4>4. Metode Pemblokiran Situs Web (Domain / URL)</h4>
+                    <p>
+                        Untuk memblokir akses ke situs web tertentu (contoh: <code>tkjapps.smksabdev.my.id</code>), terdapat beberapa metode yang dapat diterapkan:
+                    </p>
+                    <ul>
+                        <li><strong>TLS Host (Firewall Filter):</strong> Memeriksa header Server Name Indication (SNI) pada enkripsi HTTPS/TLS, sangat ampuh untuk memblokir domain modern berbasis HTTPS tanpa perlu mendekripsi paket data.</li>
+                        <li><strong>Layer7 Protocol (Regexp):</strong> Memeriksa nama domain pada header request menggunakan pencocokan pola string (Regular Expression).</li>
+                        <li><strong>Web Proxy Access (Dst. Host):</strong> Memanfaatkan fitur Web Proxy MikroTik untuk menyaring akses berdasarkan nama domain tujuan secara spesifik.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- BAGIAN B: LANGKAH KERJA -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    B. Langkah Kerja Konfigurasi
+                </h2>
+
+                <div class="note-callout">
+                    <strong>CATATAN PENTING:</strong> Ganti variabel <span class="ui-path">xx</span> pada seluruh IP Address dengan <strong>Nomor Absen Siswa</strong>. (Contoh: Absen 05 → <span class="value-badge">172.32.5.1/24</span>).
+                </div>
+
+                <!-- Langkah 8 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 8: Firewall - Blokir Ping DHCP Pool ke Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Tab <strong>General</strong>:
+                            <ul class="sub-step-list">
+                                <li>Chain: <span class="ui-path">input</span></li>
+                                <li>Src. Address: <span class="value-badge">172.32.xx.21-172.32.xx.70</span></li>
+                                <li>Protocol: <span class="ui-path">icmp</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Action</strong>:
+                            <ul class="sub-step-list">
+                                <li>Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 9 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 9: Firewall - Blokir Ping IP Pool 21-30 ke IP 61-70</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Tab <strong>General</strong>:
+                            <ul class="sub-step-list">
+                                <li>Chain: <span class="ui-path">forward</span></li>
+                                <li>Src. Address: <span class="value-badge">172.32.xx.21-172.32.xx.30</span></li>
+                                <li>Dst. Address: <span class="value-badge">172.32.xx.61-172.32.xx.70</span></li>
+                                <li>Protocol: <span class="ui-path">icmp</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Action</strong>:
+                            <ul class="sub-step-list">
+                                <li>Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 10 (Utama) -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 10: Pemblokiran File .mp3 (Metode 1: Layer7 Protocol)</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Layer7 Protocol:</strong> Buka <span class="ui-path">IP → Firewall → Layer7 Protocols</span> → Klik tombol <strong>+</strong>.
+                            <ul class="sub-step-list">
+                                <li>Name: <span class="value-badge">block-mp3</span></li>
+                                <li>Regexp: <span class="value-badge">^.*\.mp3.*$</span> → Klik <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Filter Rule:</strong> Buka tab <span class="ui-path">Filter Rules</span> → Klik tombol <strong>+</strong>.
+                            <ul class="sub-step-list">
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">forward</span> | Src. Address: <span class="value-badge">172.32.xx.0/24</span> | Protocol: <span class="ui-path">tcp</span></li>
+                                <li>Tab <strong>Advanced</strong>: Layer7 Protocol: <span class="ui-path">block-mp3</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah Alternatif 1: Content -->
+                <div class="step-card">
+                    <div class="step-header">Alternatif Pemblokiran File .mp3 (Metode 2: Firewall Content)</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                        <li>
+                            Tab <strong>General</strong>:
+                            <ul class="sub-step-list">
+                                <li>Chain: <span class="ui-path">forward</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">80</span></li>
+                                <li>Src. Address: <span class="value-badge">172.32.xx.0/24</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Advanced</strong>:
+                            <ul class="sub-step-list">
+                                <li>Content: <span class="value-badge">.mp3</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Tab <strong>Action</strong>:
+                            <ul class="sub-step-list">
+                                <li>Action: <span class="ui-path">drop</span></li>
+                            </ul>
+                        </li>
+                        <li>Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah Alternatif 2: Web Proxy -->
+                <div class="step-card">
+                    <div class="step-header">Alternatif Pemblokiran File .mp3 (Metode 3: Web Proxy Access)</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Aktifkan Web Proxy:</strong> Buka <span class="ui-path">IP → Web Proxy</span>. Centang <strong>Enabled</strong> | Port: <span class="value-badge">8080</span> | Centang <strong>Anonymous</strong> → Klik <strong>Apply</strong>.
+                        </li>
+                        <li>
+                            <strong>Aturan Blokir File:</strong> Pada jendela Web Proxy, klik tombol <span class="ui-path">Access</span> → Klik <strong>+</strong>.
+                            <ul class="sub-step-list">
+                                <li>Path: <span class="value-badge">*.mp3</span> | Action: <span class="ui-path">deny</span> → Klik <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Redirect HTTP ke Proxy (NAT):</strong> Buka <span class="ui-path">IP → Firewall → NAT</span> → Klik <strong>+</strong>.
+                            <ul class="sub-step-list">
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">dstnat</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">80</span> | In. Interface: <span class="ui-path">ether4</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">redirect</span> | To Ports: <span class="value-badge">8080</span> → Klik <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 11: Pemblokiran Situs Web -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 11: Pemblokiran Situs Web (Contoh: tkjapps.smksabdev.my.id)</div>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Metode 1: Menggunakan TLS Host (Sangat Ringan & Efektif HTTPS/HTTP)</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka menu <span class="ui-path">IP → Firewall → Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">forward</span> | Protocol: <span class="ui-path">tcp</span> | Dst. Port: <span class="value-badge">443,80</span></li>
+                                <li>Tab <strong>Advanced</strong>: TLS Host: <span class="value-badge">*tkjapps.smksabdev.my.id*</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 2: Menggunakan Layer7 Protocol (Regexp Target Domain)</strong>
+                            <ul class="sub-step-list">
+                                <li>Buka <span class="ui-path">IP → Firewall → Layer7 Protocols</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Name: <span class="value-badge">block-web-tkjapps</span></li>
+                                <li>Regexp: <span class="value-badge">^.*(tkjapps\.smksabdev\.my\.id).*$</span> → Klik <strong>OK</strong>.</li>
+                                <li>Buka tab <span class="ui-path">Filter Rules</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Tab <strong>General</strong>: Chain: <span class="ui-path">forward</span> | Src. Address: <span class="value-badge">172.32.xx.0/24</span> | Protocol: <span class="ui-path">tcp</span></li>
+                                <li>Tab <strong>Advanced</strong>: Layer7 Protocol: <span class="ui-path">block-web-tkjapps</span></li>
+                                <li>Tab <strong>Action</strong>: Action: <span class="ui-path">drop</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Metode 3: Menggunakan Web Proxy Access (Untuk Protokol HTTP)</strong>
+                            <ul class="sub-step-list">
+                                <li>Pastikan Web Proxy sudah aktif (seperti pada Langkah Alternatif 3).</li>
+                                <li>Buka <span class="ui-path">IP → Web Proxy → Access</span> → Klik tombol <strong>+</strong>.</li>
+                                <li>Dst. Host: <span class="value-badge">*tkjapps.smksabdev.my.id*</span></li>
+                                <li>Action: <span class="ui-path">deny</span> → Klik <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Mugiyono. All Rights Reserved. | Created with <span class="heart">♥</span> for TKJ
+    </footer>
+
+</body>
+</html>

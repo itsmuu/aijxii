@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 2: Konfigurasi Internet (ether3) & Routing Default</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Dynamic Navbar Component -->
+    <script src="navbar.js" defer></script>
+
+    <style>
+        /* Styling Khusus Halaman Modul Materi */
+        .content-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .module-header {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .module-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .module-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .section-box {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Teori Items */
+        .theory-item {
+            margin-bottom: 20px;
+        }
+
+        .theory-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .theory-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+        }
+
+        .theory-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Langkah Kerja Cards */
+        .step-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .step-list {
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .sub-step-list {
+            margin: 6px 0 6px 18px;
+            list-style-type: disc;
+        }
+
+        /* UI Badges & Formatting */
+        .ui-path {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .note-callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+
+        .success-callout {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #166534;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Otomatis dari navbar.js -->
+    <app-navbar></app-navbar>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-container">
+            
+            <!-- Header Modul -->
+            <div class="module-header">
+                <span class="module-badge">Modul 02</span>
+                <h1 class="module-title">Konfigurasi Internet (ether3) & Routing Default</h1>
+                <p class="module-desc">
+                    Modul ini membahas langkah-langkah penghubungan router ke internet melalui interface ether3 menggunakan DHCP Client, penentuan jalur Default Gateway secara otomatis, serta aktivasi aturan NAT Masquerade.
+                </p>
+            </div>
+
+            <!-- BAGIAN A: LANDASAN TEORI -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    A. Landasan Teori
+                </h2>
+
+                <div class="theory-item">
+                    <h4>1. DHCP Client pada Interface WAN (ether3)</h4>
+                    <p>
+                        DHCP Client berfungsi meminta konfigurasi IP address, subnet mask, default gateway, dan DNS server secara otomatis dari ISP (Internet Service Provider). Metode ini lebih praktis karena tidak memerlukan konfigurasi manual IP statis.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>2. Default Gateway (0.0.0.0/0)</h4>
+                    <p>
+                        Default route dengan alamat tujuan <code>0.0.0.0/0</code> mengarahkan seluruh lalu lintas data yang tujuannya tidak diketahui di tabel routing lokal menuju router milik ISP (Gateway ISP). Pada DHCP Client, gateway ini diperoleh secara otomatis.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>3. NAT (Network Address Translation) Masquerade</h4>
+                    <p>
+                        Aturan NAT dengan aksi <em>Masquerade</em> berfungsi menerjemahkan alamat IP lokal privat menjadi IP publik yang didapat dari DHCP Client pada ether3 ketika data dikirim ke luar jaringan, sehingga jaringan lokal dapat terhubung ke internet.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BAGIAN B: LANGKAH KERJA -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    B. Langkah Kerja Konfigurasi (Dinamis)
+                </h2>
+
+                <div class="note-callout">
+                    <strong>METODE DINAMIS:</strong> Konfigurasi ini menggunakan DHCP Client sehingga seluruh pengaturan IP, Gateway, dan DNS diperoleh secara otomatis dari ISP. Tidak diperlukan pengaturan IP statis manual.
+                </div>
+
+                <!-- Langkah 5A: DHCP Client -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5A: Konfigurasi DHCP Client pada ether3</div>
+                    <ol class="step-list">
+                        <li>
+                            Buka menu <span class="ui-path">IP → DHCP Client</span> → Klik tombol <strong>+</strong>.
+                        </li>
+                        <li>
+                            Pada jendela yang muncul, isi konfigurasi berikut:
+                            <ul class="sub-step-list">
+                                <li><strong>Interface</strong>: Pilih <span class="ui-path">ether3</span> (interface yang terhubung ke modem/ISP).</li>
+                                <li><strong>Use Peer DNS</strong>: <span class="value-badge">✓ Centang</span> (agar DNS dari ISP otomatis digunakan).</li>
+                                <li><strong>Add Default Route</strong>: <span class="value-badge">✓ Centang</span> (agar gateway default otomatis ditambahkan ke routing).</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Klik <strong>OK</strong> untuk menyimpan konfigurasi.
+                        </li>
+                        <li>
+                            Tunggu beberapa saat hingga status berubah menjadi <span class="value-badge">bound</span> (berhasil mendapatkan IP dari ISP).
+                        </li>
+                    </ol>
+                    <div class="success-callout">
+                        <strong>✓ INDIKASI BERHASIL:</strong> Pada daftar DHCP Client, akan muncul IP Address, Gateway, dan DNS Server yang diberikan oleh ISP secara otomatis.
+                    </div>
+                </div>
+
+                <!-- Langkah 5B: Verifikasi Routing -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5B: Verifikasi Default Route</div>
+                    <ol class="step-list">
+                        <li>
+                            Buka menu <span class="ui-path">IP → Routes</span> untuk memverifikasi rute default.
+                        </li>
+                        <li>
+                            Pastikan terdapat entri otomatis dengan <strong>Dst. Address</strong>: <span class="value-badge">0.0.0.0/0</span> dan <strong>Gateway</strong> yang terisi IP Gateway dari ISP via <span class="ui-path">ether3</span>.
+                        </li>
+                        <li>
+                            Perhatikan *flag* di sebelah kiri entri tersebut yang bertuliskan <span class="ui-path">DA</span> atau <span class="ui-path">DAS</span> (<strong>D</strong>ynamic <strong>A**ctive **S**tatic / **D**ynamic **A**ctive), yang menandakan bahwa rute default ini ditambahkan secara **otomatis/dinamis** oleh sistem DHCP Client dan sedang aktif.
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 5C: NAT Masquerade -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 5C: Konfigurasi NAT Masquerade</div>
+                    <ol class="step-list">
+                        <li>
+                            Buka menu <span class="ui-path">IP → Firewall → NAT</span> → Klik tombol <strong>+</strong>.
+                        </li>
+                        <li>
+                            Pada tab <strong>General</strong>, isi:
+                            <ul class="sub-step-list">
+                                <li><strong>Chain</strong>: <span class="ui-path">srcnat</span></li>
+                                <li><strong>Out. Interface</strong>: <span class="ui-path">ether3</span> (interface WAN yang terhubung ke internet)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Pada tab <strong>Action</strong>, isi:
+                            <ul class="sub-step-list">
+                                <li><strong>Action</strong>: <span class="ui-path">masquerade</span></li>
+                            </ul>
+                        </li>
+                        <li>
+                            Klik <strong>OK</strong> untuk menyimpan aturan NAT.
+                        </li>
+                    </ol>
+                    <div class="success-callout">
+                        <strong>✓ SELESAI:</strong> Router sekarang telah terhubung ke internet secara dinamis melalui DHCP Client pada ether3 dan siap meneruskan koneksi internet ke jaringan lokal.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Mugiyono. All Rights Reserved. | Created with <span class="heart">♥</span> for TKJ
+    </footer>
+
+</body>
+</html>

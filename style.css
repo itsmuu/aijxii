@@ -1,0 +1,440 @@
+/* ==========================================================================
+   1. VARIABLES & THEMING (LIGHT & DARK MODE)
+   ========================================================================== */
+:root {
+    /* Colors - Light Theme */
+    --bg-color: #f8fafc;
+    --navbar-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent-blue: #0284c7;
+    --border-color: #e2e8f0;
+    
+    /* NOTE: --navbar-height removed from :root so it only applies when explicitly set (e.g. for fixed navbar)
+       Use the fallback in calc(var(--navbar-height, 0px) + ... ) so sticky navbar doesn't add extra offset. */
+    
+    /* Module Specific - Light Theme */
+    --badge-bg: #e0f2fe;
+    --badge-text: #0284c7;
+    --step-card-bg: #f8fafc;
+    --step-card-border: #e2e8f0;
+    --ui-path-bg: #f1f5f9;
+    --ui-path-border: #cbd5e1;
+    --ui-path-text: #0f172a;
+    --value-badge-bg: #f0fdf4;
+    --value-badge-border: #bbf7d0;
+    --value-badge-text: #166534;
+    --note-bg: #eff6ff;
+    --note-text: #1e40af;
+
+    /* Shadows */
+    --shadow-sm: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+    /* Colors - Dark Theme */
+    --bg-color: #0f172a;
+    --navbar-bg: rgba(15, 23, 42, 0.85);
+    --card-bg: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-blue: #38bdf8;
+    --border-color: #334155;
+    
+    /* Module Specific - Dark Theme */
+    --badge-bg: rgba(56, 189, 248, 0.15);
+    --badge-text: #38bdf8;
+    --step-card-bg: #0f172a;
+    --step-card-border: #334155;
+    --ui-path-bg: #334155;
+    --ui-path-border: #475569;
+    --ui-path-text: #f8fafc;
+    --value-badge-bg: rgba(34, 197, 94, 0.15);
+    --value-badge-border: rgba(34, 197, 94, 0.3);
+    --value-badge-text: #4ade80;
+    --note-bg: rgba(30, 58, 138, 0.3);
+    --note-text: #93c5fd;
+
+    /* Shadows */
+    --shadow-sm: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 12px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   2. GLOBAL RESET & BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html, body {
+    width: 100%;
+    overflow-x: hidden; /* Mencegah geser horizontal berlebih di HP */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==========================================================================
+   3. NAVIGATION HOST (WEB COMPONENT)
+   ========================================================================== */
+app-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: block;
+}
+
+/* ==========================================================================
+   4. MAIN CONTAINER & LAYOUT
+   ========================================================================== */
+main {
+    flex: 1;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    /* Use fallback: if --navbar-height is not set (sticky navbar) fallback to 0px */
+    padding: calc(var(--navbar-height, 0px) + 40px) 20px 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   5. HOMEPAGE GRID & CARDS
+   ========================================================================== */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent-blue);
+}
+
+.icon-circle {
+    width: 72px;
+    height: 72px;
+    background-color: rgba(2, 132, 199, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-blue);
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.card:hover .icon-circle {
+    background-color: rgba(2, 132, 199, 0.2);
+}
+
+.card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   6. MODULE PAGES STYLING (MODUL 1 - 4)
+   ========================================================================== */
+.content-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* Header Modul */
+.module-header {
+    background-color: var(--card-bg);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.module-badge {
+    display: inline-block;
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.module-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.module-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Section Box */
+.section-box {
+    background-color: var(--card-bg);
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Landasan Teori */
+.theory-item {
+    margin-bottom: 20px;
+}
+
+.theory-item:last-child {
+    margin-bottom: 0;
+}
+
+.theory-item h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent-blue);
+    margin-bottom: 6px;
+}
+
+.theory-item p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.theory-item ul {
+    margin: 8px 0 0 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Langkah Kerja Cards */
+.step-card {
+    background-color: var(--step-card-bg);
+    border: 1px solid var(--step-card-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.step-card:last-child {
+    margin-bottom: 0;
+}
+
+.step-header {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.step-list {
+    padding-left: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.sub-step-list {
+    margin: 6px 0 6px 18px;
+    list-style-type: disc;
+}
+
+/* UI Badges & Formatting */
+.ui-path, .value-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 600;
+    word-break: break-all; /* Agar IP address panjang tidak overflow */
+}
+
+.ui-path {
+    background-color: var(--ui-path-bg);
+    border: 1px solid var(--ui-path-border);
+    color: var(--ui-path-text);
+}
+
+.value-badge {
+    background-color: var(--value-badge-bg);
+    border: 1px solid var(--value-badge-border);
+    color: var(--value-badge-text);
+}
+
+.note-callout {
+    background-color: var(--note-bg);
+    border-left: 4px solid var(--accent-blue);
+    color: var(--note-text);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   7. FOOTER
+   ========================================================================== */
+footer {
+    text-align: center;
+    padding: 20px 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    margin-top: auto;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+footer span.heart {
+    color: #ef4444;
+}
+
+/* ==========================================================================
+   8. RESPONSIVE MEDIA QUERIES (OPTIMASI UNTUK HP & TABLET)
+   ========================================================================== */
+
+/* Tablet (Max 1024px) */
+@media (max-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+/* HP & Layar Kecil (Max 768px) */
+@media (max-width: 768px) {
+    main {
+        padding: calc(var(--navbar-height, 0px) + 24px) 16px 24px 16px;
+        justify-content: flex-start; /* Agar konten panjang di HP scroll natural */
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr; /* 1 Kolom penuh untuk HP */
+        gap: 16px;
+    }
+
+    .card {
+        padding: 24px 18px; /* Mengurangi padding kartu agar pas di HP */
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 14px;
+    }
+
+    .icon-circle svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .module-header, .section-box {
+        padding: 20px 16px;
+        border-radius: 12px;
+    }
+
+    .module-title {
+        font-size: 22px;
+    }
+
+    .section-title {
+        font-size: 18px;
+    }
+
+    .step-card {
+        padding: 16px 12px;
+    }
+
+    .step-list {
+        padding-left: 16px; /* Indentasi lebih kecil agar teks tidak terjepit */
+    }
+
+    .content-container {
+        gap: 20px;
+    }
+}
+
+/* HP Layar Sangat Kecil (Max 480px) */
+@media (max-width: 480px) {
+    main {
+        padding: calc(var(--navbar-height, 0px) + 16px) 12px 16px 12px;
+    }
+
+    .card h3 {
+        font-size: 16px;
+    }
+
+    .card p {
+        font-size: 12px;
+    }
+
+The file content was truncated by the API response (large file).

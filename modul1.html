@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 1: Konfigurasi Dasar MikroTik</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Dynamic Navbar Component -->
+    <script src="navbar.js" defer></script>
+
+    <style>
+        /* Styling Khusus Halaman Modul Materi */
+        .content-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .module-header {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .module-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .module-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .section-box {
+            background-color: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Teori Items */
+        .theory-item {
+            margin-bottom: 20px;
+        }
+
+        .theory-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .theory-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+        }
+
+        .theory-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .theory-item ul {
+            margin: 8px 0 0 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Langkah Kerja Cards */
+        .step-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .step-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .step-list {
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* UI Badges & Code Highlighting */
+        .ui-path {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .note-callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Otomatis dari navbar.js -->
+    <app-navbar></app-navbar>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-container">
+            
+            <!-- Header Modul -->
+            <div class="module-header">
+                <span class="module-badge">Modul 01</span>
+                <h1 class="module-title">Konfigurasi Dasar MikroTik</h1>
+                <p class="module-desc">
+                    Modul ini membahas konsep dasar MikroTik RouterOS, manajemen identitas perangkat, keamanan akun dasar, konfigurasi DNS Server, serta pengaturan sinkronisasi waktu menggunakan NTP Client.
+                </p>
+            </div>
+
+            <!-- BAGIAN A: LANDASAN TEORI -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    A. Landasan Teori
+                </h2>
+
+                <div class="theory-item">
+                    <h4>1. MikroTik RouterOS & WinBox</h4>
+                    <p>
+                        MikroTik RouterOS adalah sistem operasi berbasis Linux yang dirancang khusus untuk menjadikan komputer atau perangkat keras <em>RouterBOARD</em> berfungsi sebagai router jaringan yang andal. Manajemen router ini umumnya dilakukan menggunakan <strong>WinBox</strong>, yaitu aplikasi GUI (Graphical User Interface) berbasis Windows yang memungkinkan pengguna mengonfigurasi router secara visual melalui MAC Address maupun IP Address.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>2. Identity Router (Identitas Perangkat)</h4>
+                    <p>
+                        Dalam jaringan yang memiliki banyak perangkat router, penamaan identitas (<em>Identity</em>) sangat penting. Identitas ini berfungsi sebagai penanda unik router pada <em>WinBox Neighbor Discovery</em>. Mengubah nama router bawaan (<em>default</em>: <code>MikroTik</code>) membantu teknisi menghindari kesalahan pemilihan router saat melakukan manajemen jarak jauh.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>3. Pengamanan Router (Account Password)</h4>
+                    <p>
+                        Secara bawaan, router MikroTik menggunakan username <code>admin</code> tanpa password. Pengubahan password pertama kali merupakan prosedur keselamatan dasar (<em>baseline security</em>) untuk memastikan hanya personel terotorisasi yang dapat mengakses dan merubah konfigurasi sistem.
+                    </p>
+                </div>
+
+                <div class="theory-item">
+                    <h4>4. Domain Name System (DNS) Server</h4>
+                    <p>DNS adalah sistem yang menerjemahkan nama domain (seperti <code>google.com</code>) menjadi alamat IP numerik. Pada MikroTik:</p>
+                    <ul>
+                        <li><strong>DNS External (Servers):</strong> Digunakan oleh router itu sendiri untuk menyelesaikan nama domain dari internet.</li>
+                        <li><strong>Allow Remote Requests:</strong> Mengaktifkan router sebagai <em>DNS Forwarder/Cache</em> untuk jaringan lokal (LAN), sehingga pencarian DNS oleh client menjadi lebih cepat.</li>
+                    </ul>
+                </div>
+
+                <div class="theory-item">
+                    <h4>5. Network Time Protocol (NTP Client)</h4>
+                    <p>
+                        RouterBOARD umumnya tidak memiliki baterai RTC (<em>Real-Time Clock</em>) internal. Oleh karena itu, router membutuhkan <strong>NTP Client (SNTP)</strong> untuk memintakan sinkronisasi tanggal dan waktu secara otomatis ke server waktu di internet (seperti <code>time.windows.com</code>) setiap kali terhubung ke jaringan. Akurasi waktu sangat krusial untuk pencatatan <em>log</em> aktivitas dan fungsi penjadwalan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BAGIAN B: LANGKAH KERJA -->
+            <div class="section-box">
+                <h2 class="section-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    B. Langkah Kerja Konfigurasi
+                </h2>
+
+                <div class="note-callout">
+                    <strong>Persiapan:</strong> Hubungkan kabel UTP dari Port Ethernet PC ke port <strong>ether2</strong> pada RouterBOARD. Buka WinBox, pilih MAC Address router di tab <em>Neighbors</em>, lalu klik <strong>Connect</strong>.
+                </div>
+
+                <!-- Langkah 1 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 1: Mengganti Identity Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → Identity</span>.</li>
+                        <li>Pada kolom <strong>Name</strong>, ketik identitas baru: <span class="value-badge">Router-NamaSiswa</span> (Contoh: <span class="value-badge">Router-Budi</span>).</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                        <li>Amati perubahan nama router pada bagian title bar aplikasi WinBox.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 2 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 2: Mengubah Password Router</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → Password</span>.</li>
+                        <li>Biarkan kolom <strong>Old Password</strong> kosong (jika default).</li>
+                        <li>Isi kolom <strong>New Password</strong> dan <strong>Confirm Password</strong> dengan password baru.</li>
+                        <li>Klik tombol <strong>Change</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 3 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 3: Konfigurasi DNS Server</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">IP → DNS</span>.</li>
+                        <li>Pada kolom <strong>Servers</strong>, klik panah bawah, tambahkan DNS Static: <span class="value-badge">103.172.172.4</span>.</li>
+                        <li>Centang opsi <strong>Allow Remote Requests</strong>.</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Langkah 4 -->
+                <div class="step-card">
+                    <div class="step-header">Langkah 4: Konfigurasi NTP Client (Sinkronisasi Waktu)</div>
+                    <ol class="step-list">
+                        <li>Buka menu <span class="ui-path">System → NTP Client</span> (atau <span class="ui-path">SNTP Client</span>).</li>
+                        <li>Berikan centang pada opsi <strong>Enabled</strong>.</li>
+                        <li>Isi kolom <strong>Server DNS Names</strong>: <span class="value-badge">time.windows.com</span>.</li>
+                        <li>Klik tombol <strong>Apply</strong>, lalu <strong>OK</strong>.</li>
+                        <li>Pastikan status berubah menjadi <em>synchronized</em> dan waktu router terupdate secara otomatis.</li>
+                    </ol>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Mugiyono. All Rights Reserved. | Created with <span class="heart">♥</span> for TKJ
+    </footer>
+
+</body>
+</html>
