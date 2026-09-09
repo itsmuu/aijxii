@@ -140,6 +140,16 @@
                         <strong id="fullscreenViolations" class="stat-value">0</strong>
                     </div>
                 </div>
+                <div class="overview-grid">
+                    <div class="content-card">
+                        <div class="section-heading"><div><h3>Nilai Tertinggi</h3><p>3 siswa dengan nilai terbaik saat ini.</p></div></div>
+                        <div id="topScorersList" class="rank-list"></div>
+                    </div>
+                    <div class="content-card">
+                        <div class="section-heading"><div><h3>Perlu Remedial</h3><p>Siswa dengan nilai di bawah KKM 75.</p></div></div>
+                        <div id="remedialList" class="rank-list"></div>
+                    </div>
+                </div>
             </section>
 
             <section id="participantsView" class="view">
@@ -490,6 +500,19 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             document.getElementById('recapPagination').innerHTML = recapPaginationMarkup(totalPages);
         }
 
+        function renderOverviewExtras() {
+            const scored = getParticipants().filter((participant) => participant.lastScore !== undefined);
+            const top = [...scored].sort((a, b) => b.lastScore - a.lastScore).slice(0, 3);
+            const topRankClass = ['gold', 'silver', 'bronze'];
+            document.getElementById('topScorersList').innerHTML = top.length
+                ? top.map((participant, index) => `<div class="rank-item"><span class="rank-badge ${topRankClass[index]}">${index + 1}</span><span class="rank-meta"><strong>${participant.name}</strong><small>${participant.nis}</small></span><span class="rank-score">${Math.round(participant.lastScore)}%</span></div>`).join('')
+                : '<p class="list-empty">Belum ada nilai untuk ditampilkan.</p>';
+            const remedial = scored.filter((participant) => participant.lastScore < 75).sort((a, b) => a.lastScore - b.lastScore);
+            document.getElementById('remedialList').innerHTML = remedial.length
+                ? remedial.map((participant) => `<div class="rank-item"><span class="rank-badge red">!</span><span class="rank-meta"><strong>${participant.name}</strong><small>${participant.nis}</small></span><span class="rank-score rank-score-red">${Math.round(participant.lastScore)}%</span></div>`).join('')
+                : '<p class="list-empty">Tidak ada, semua siswa sudah mencapai KKM 75.</p>';
+        }
+
         function render() {
             const participants = getParticipants();
             const filtered = filteredParticipants();
@@ -516,6 +539,7 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             document.querySelectorAll('[data-delete]').forEach((button) => button.addEventListener('click', () => deleteParticipant(button.dataset.delete)));
             renderRecap();
             renderViolations();
+            renderOverviewExtras();
         }
 
         async function resetParticipant(nis) {
