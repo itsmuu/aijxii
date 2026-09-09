@@ -963,10 +963,7 @@ td .button-row {
 }
 
 .sidebar {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
+    min-height: 100vh;
     background: linear-gradient(180deg, var(--navy-deep), var(--navy));
     color: #ffffff;
     padding: 25px 18px;
@@ -1132,6 +1129,7 @@ td .button-row {
 
 .login-card p {
     text-align: center;
+    margin: 0 0 14px;
 }
 
 .topbar h2 {
@@ -1696,6 +1694,7 @@ tr:last-child td {
 .login-card form {
     display: grid;
     gap: 14px;
+    margin-top: 6px;
 }
 
 .login-card form .primary {
@@ -2832,6 +2831,7 @@ footer span.heart {
         transition: transform 0.28s ease;
         z-index: 40;
         box-shadow: 0 0 60px rgba(10, 28, 50, 0.35);
+        overflow-y: auto;
     }
 
     .sidebar.open {
@@ -3022,6 +3022,8 @@ footer span.heart {
     }
 
     .table-toolbar .search-box {
+        flex: 0 0 auto;
+        width: 100%;
         max-width: none;
     }
 
