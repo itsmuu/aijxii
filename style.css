@@ -1433,6 +1433,7 @@ td .button-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
     gap: 18px;
+    align-items: start;
 }
 
 .rank-card {
@@ -1501,6 +1502,87 @@ td .button-row {
 .rank-card-icon svg {
     width: 22px;
     height: 22px;
+}
+
+.rank-count {
+    margin-left: auto;
+    flex: none;
+    background: var(--rank-accent-soft);
+    color: var(--rank-accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+}
+
+.rank-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.rank-strip .list-empty {
+    grid-column: 1 / -1;
+}
+
+.podium-item {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 4px;
+    padding: 16px 10px 14px;
+    border-radius: 14px;
+    background: var(--card-soft);
+    border: 1px solid var(--border);
+    text-align: center;
+    min-width: 0;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.podium-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--rank-accent);
+    background: var(--card);
+}
+
+.podium-item:first-child {
+    border-color: color-mix(in srgb, var(--rank-accent) 45%, var(--border));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--rank-accent-soft) 70%, var(--card)), var(--card-soft));
+}
+
+.podium-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 4px;
+}
+
+.podium-sub {
+    font-size: 11.5px;
+    color: var(--muted);
+}
+
+.podium-score {
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--rank-accent);
+    margin: 3px 0 5px;
+}
+
+.podium-score small {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-left: 1px;
+}
+
+.podium-item .rank-bar {
+    width: 100%;
 }
 
 .rank-list {

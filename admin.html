@@ -146,12 +146,13 @@
                             <span class="rank-card-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg></span>
                             <div><h3>Nilai Tertinggi</h3><p>3 siswa berkinerja terbaik saat ini.</p></div>
                         </div>
-                        <div id="topScorersList" class="rank-list"></div>
+                        <div id="topScorersList" class="rank-strip"></div>
                     </div>
                     <div class="rank-card need-remedial">
                         <div class="rank-card-head">
                             <span class="rank-card-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></span>
                             <div><h3>Perlu Remedial</h3><p>Siswa dengan nilai di bawah KKM 75.</p></div>
+                            <span class="rank-count" id="remedialCountBadge">0</span>
                         </div>
                         <div id="remedialList" class="rank-list"></div>
                     </div>
@@ -511,9 +512,19 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             return `<span class="rank-bar"><span class="rank-bar-fill ${fillClass}" style="width:${width}%"></span></span>`;
         }
 
-        function rankRowMarkup(participant, rank, medalClass, fillClass) {
-            return `<div class="rank-item">
+        function podiumMarkup(participant, rank, medalClass, fillClass) {
+            return `<div class="podium-item">
                 <span class="rank-medal ${medalClass}">${rank}</span>
+                <strong class="podium-name" title="${participant.name}">${participant.name}</strong>
+                <small class="podium-sub">${participant.nis}</small>
+                <span class="podium-score">${Math.round(participant.lastScore)}<small>%</small></span>
+                ${rankBar(participant.lastScore, fillClass)}
+            </div>`;
+        }
+
+        function rankRowMarkup(participant, medalClass, fillClass) {
+            return `<div class="rank-item">
+                <span class="rank-medal ${medalClass}">!</span>
                 <span class="rank-meta"><strong>${participant.name}</strong><small>${participant.nis}</small></span>
                 <span class="rank-score-wrap"><span class="rank-score">${Math.round(participant.lastScore)}<small>%</small></span>${rankBar(participant.lastScore, fillClass)}</span>
             </div>`;
@@ -525,11 +536,12 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             const topMedal = ['gold', 'silver', 'bronze'];
             const topFill = ['fill-gold', 'fill-silver', 'fill-bronze'];
             document.getElementById('topScorersList').innerHTML = top.length
-                ? top.map((participant, index) => rankRowMarkup(participant, index + 1, topMedal[index], topFill[index])).join('')
+                ? top.map((participant, index) => podiumMarkup(participant, index + 1, topMedal[index], topFill[index])).join('')
                 : '<p class="list-empty">Belum ada nilai untuk ditampilkan.</p>';
             const remedial = scored.filter((participant) => participant.lastScore < 75).sort((a, b) => a.lastScore - b.lastScore);
+            document.getElementById('remedialCountBadge').textContent = remedial.length;
             document.getElementById('remedialList').innerHTML = remedial.length
-                ? remedial.map((participant) => rankRowMarkup(participant, '!', 'red', 'fill-red')).join('')
+                ? remedial.map((participant) => rankRowMarkup(participant, 'red', 'fill-red')).join('')
                 : '<p class="list-empty">Tidak ada, semua siswa sudah mencapai KKM 75.</p>';
         }
 
