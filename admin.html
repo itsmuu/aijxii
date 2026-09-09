@@ -152,9 +152,11 @@
                         <div class="rank-card-head">
                             <span class="rank-card-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></span>
                             <div><h3>Perlu Remedial</h3><p>Siswa dengan nilai di bawah KKM 75.</p></div>
-                            <span class="rank-count" id="remedialCountBadge">0</span>
                         </div>
-                        <div id="remedialList" class="rank-list"></div>
+                        <div class="remedial-count" id="remedialCountBox">
+                            <strong id="remedialCountNumber">0</strong>
+                            <span>siswa remedial</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -522,14 +524,6 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             </div>`;
         }
 
-        function rankRowMarkup(participant, medalClass, fillClass) {
-            return `<div class="rank-item">
-                <span class="rank-medal ${medalClass}">!</span>
-                <span class="rank-meta"><strong>${participant.name}</strong><small>${participant.nis}</small></span>
-                <span class="rank-score-wrap"><span class="rank-score">${Math.round(participant.lastScore)}<small>%</small></span>${rankBar(participant.lastScore, fillClass)}</span>
-            </div>`;
-        }
-
         function renderOverviewExtras() {
             const scored = getParticipants().filter((participant) => participant.lastScore !== undefined);
             const top = [...scored].sort((a, b) => b.lastScore - a.lastScore).slice(0, 3);
@@ -538,11 +532,8 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             document.getElementById('topScorersList').innerHTML = top.length
                 ? top.map((participant, index) => podiumMarkup(participant, index + 1, topMedal[index], topFill[index])).join('')
                 : '<p class="list-empty">Belum ada nilai untuk ditampilkan.</p>';
-            const remedial = scored.filter((participant) => participant.lastScore < 75).sort((a, b) => a.lastScore - b.lastScore);
-            document.getElementById('remedialCountBadge').textContent = remedial.length;
-            document.getElementById('remedialList').innerHTML = remedial.length
-                ? remedial.map((participant) => rankRowMarkup(participant, 'red', 'fill-red')).join('')
-                : '<p class="list-empty">Tidak ada, semua siswa sudah mencapai KKM 75.</p>';
+            const remedial = scored.filter((participant) => participant.lastScore < 75);
+            document.getElementById('remedialCountNumber').textContent = remedial.length;
         }
 
         function render() {
