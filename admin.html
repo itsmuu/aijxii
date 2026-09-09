@@ -59,17 +59,23 @@
     <div id="adminApp" class="admin-layout" hidden>
         <aside class="sidebar">
             <div class="sidebar-topbar">
-                <div class="brand"><small>Ujian Sekolah</small><h1>STS MikroTik</h1></div>
+                <div class="brand">
+                    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                    <span class="brand-text"><small>Ujian Sekolah</small><h1>STS MikroTik</h1></span>
+                </div>
+                <button type="button" id="sidebarCollapseBtn" class="sidebar-collapse-btn" aria-label="Ciutkan menu" title="Ciutkan menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
                 <button type="button" id="menuCloseBtn" class="menu-close-btn" aria-label="Tutup menu navigasi">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
                 </button>
             </div>
             <nav class="sidebar-nav" aria-label="Navigasi admin">
-                <button class="nav-button active" data-view="overviewView">Ringkasan</button>
-                <button class="nav-button" data-view="participantsView">Option Peserta</button>
-                <button class="nav-button" data-view="recapView">Rekap</button>
-                <button class="nav-button" data-view="violationsView">Pelanggaran</button>
-                <button class="nav-button" data-view="answerView">Kunci Jawaban</button>
+                <button class="nav-button active" data-view="overviewView" title="Ringkasan"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg><span class="nav-label">Ringkasan</span></button>
+                <button class="nav-button" data-view="participantsView" title="Option Peserta"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span class="nav-label">Option Peserta</span></button>
+                <button class="nav-button" data-view="recapView" title="Rekap"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span class="nav-label">Rekap</span></button>
+                <button class="nav-button" data-view="violationsView" title="Pelanggaran"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span class="nav-label">Pelanggaran</span></button>
+                <button class="nav-button" data-view="answerView" title="Kunci Jawaban"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M21 2l-9.6 9.6"></path><path d="M15.5 7.5l3 3L22 7l-3-3"></path></svg><span class="nav-label">Kunci Jawaban</span></button>
             </nav>
         </aside>
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -716,6 +722,9 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const sidebarEl = document.querySelector('.sidebar');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const sidebarCollapseBtn = document.getElementById('sidebarCollapseBtn');
+        const DESKTOP_BREAKPOINT = 900;
+        function isDesktop() { return window.innerWidth > DESKTOP_BREAKPOINT; }
         function openSidebar() {
             sidebarEl.classList.add('open');
             sidebarBackdrop.classList.add('open');
@@ -726,12 +735,27 @@ return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>N
             sidebarBackdrop.classList.remove('open');
             menuToggleBtn.setAttribute('aria-expanded', 'false');
         }
-        menuToggleBtn.addEventListener('click', openSidebar);
+        function setMini(force) {
+            const mini = typeof force === 'boolean' ? force : !sidebarEl.classList.contains('mini');
+            sidebarEl.classList.toggle('mini', mini);
+            menuToggleBtn.setAttribute('aria-expanded', mini ? 'false' : 'true');
+        }
+        menuToggleBtn.addEventListener('click', () => {
+            if (isDesktop()) {
+                setMini();
+            } else if (sidebarEl.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+        sidebarCollapseBtn.addEventListener('click', () => setMini(true));
         menuCloseBtn.addEventListener('click', closeSidebar);
         sidebarBackdrop.addEventListener('click', closeSidebar);
-        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSidebar(); });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeSidebar(); if (isDesktop()) setMini(false); } });
+        window.addEventListener('resize', () => { if (isDesktop()) closeSidebar(); });
 
-        document.querySelectorAll('.nav-button[data-view]').forEach((button) => button.addEventListener('click', () => { showView(button.dataset.view, button.textContent); closeSidebar(); }));
+        document.querySelectorAll('.nav-button[data-view]').forEach((button) => button.addEventListener('click', () => { const labelEl = button.querySelector('.nav-label'); showView(button.dataset.view, (labelEl || button).textContent.trim()); closeSidebar(); }));
         document.addEventListener('click', (event) => {
             const sizeBtn = event.target.closest('[data-pagesize]');
             if (sizeBtn) {
