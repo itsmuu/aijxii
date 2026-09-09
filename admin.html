@@ -602,7 +602,7 @@
         }
 
         function gradeLabel(score) {
-            return score >= 80 ? 'Sangat Baik' : score >= 70 ? 'Baik' : score >= 60 ? 'Cukup' : 'Perlu Remedial';
+            return score >= 90 ? 'Sangat Baik' : score >= 80 ? 'Baik' : score >= 75 ? 'Cukup' : 'Perlu Remedial';
         }
 
         function recapList() {
@@ -631,7 +631,7 @@
                 const [status, statusClass] = participantStatus(participant);
                 const score = participant.lastScore;
                 const grade = score !== undefined ? gradeLabel(score) : '-';
-                const gradeClass = score !== undefined && score < 60 ? 'blocked' : 'done';
+                const gradeClass = score !== undefined && score < 75 ? 'blocked' : 'done';
                 return `<tr><td>${recapCurrentPage * perPage + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td>${waktuRekapMarkup(participant)}</td><td class="score">${score !== undefined ? `${score}%` : '-'}</td><td><span class="status ${gradeClass}">${grade}</span></td></tr>`;
             }).join('');
             return `<div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Status</th><th>Waktu</th><th>Nilai</th><th>Predikat</th></tr></thead><tbody>${rows}</tbody></table></div>`;
@@ -665,7 +665,7 @@
             const average = scores.length ? Math.round(scores.reduce((sum, value) => sum + value, 0) / scores.length) : null;
             const highest = scores.length ? Math.max(...scores) : null;
             const lowest = scores.length ? Math.min(...scores) : null;
-            const remedial = completed.filter((participant) => participant.lastScore < 60).length;
+            const remedial = completed.filter((participant) => participant.lastScore < 75).length;
             document.getElementById('recapChips').innerHTML = `
                 <span class="recap-chip"><strong>${participants.length}</strong> peserta</span>
                 <span class="recap-chip"><strong>${completed.length}</strong> sudah dinilai</span>
