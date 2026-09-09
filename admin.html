@@ -136,7 +136,16 @@
                     <div class="section-heading"><div><h3>Data peserta ujian</h3><p>Tambahkan peserta, import CSV, dan reset akses login bila diperlukan.</p></div><div class="button-row"><button class="danger" id="resetAllBtn">Reset Semua Login</button></div></div>
                     <form id="addParticipantForm" class="form-grid"><div class="field"><label for="nameInput">Nama peserta</label><input id="nameInput" type="text" placeholder="Contoh: Andi Prasetyo" required></div><div class="field"><label for="nisInput">NIS</label><input id="nisInput" type="text" inputmode="numeric" placeholder="Contoh: 2024001" required></div><button class="primary" type="submit">Tambah Peserta</button></form>
                     <div class="section-heading" style="margin-top: 28px; margin-bottom: 10px;"><div><h3>Upload daftar peserta</h3><p>Gunakan CSV dengan kolom <strong>nama</strong> dan <strong>nis</strong>. Baris pertama dapat berisi header.</p></div></div>
-                    <div class="button-row"><input id="participantFileInput" type="file" accept=".csv,text/csv" style="max-width: 260px; padding: 10px; border: 1px solid var(--line); border-radius: 9px;"><button class="primary" id="uploadParticipantsBtn" type="button">Import CSV</button><a class="outline" href="peserta-template.csv" download>Download Template</a></div>
+                    <div class="button-row upload-box">
+                        <label class="file-btn" for="participantFileInput">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <span class="btn-text">Pilih File CSV</span>
+                            <span id="uploadFileName" class="file-name">Belum ada file</span>
+                        </label>
+                        <input id="participantFileInput" type="file" accept=".csv,text/csv" hidden>
+                        <button class="primary" id="uploadParticipantsBtn" type="button">Import CSV</button>
+                        <a class="outline" href="peserta-template.csv" download>Download Template</a>
+                    </div>
                     <div class="table-toolbar">
                         <div class="search-box">
                             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -342,12 +351,11 @@
 
         function tableMarkup(participants) {
             if (!participants.length) return '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada peserta.</div>';
-            return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>NIS</th><th>Status</th><th>Nilai</th><th>Keluar Fullscreen</th><th>Total Pelanggaran</th><th>Aksi</th></tr></thead><tbody>${participants.map((participant, index) => {
+return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>NIS</th><th>Status</th><th>Keluar Fullscreen</th><th>Total Pelanggaran</th><th>Aksi</th></tr></thead><tbody>${participants.map((participant, index) => {
                 const [status, statusClass] = participantStatus(participant);
-                const score = participant.lastScore !== undefined ? `${participant.lastScore}%` : '-';
                 const violations = participant.cheatEvents?.length || 0;
                 const fullscreenViolations = participant.fullscreenExitCount ?? (participant.cheatEvents || []).filter((event) => String(event.reason || '').toLowerCase().includes('fullscreen')).length;
-                return `<tr><td>${currentPage * getPerPage() + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td class="score">${score}</td><td class="violation-count">${fullscreenViolations}</td><td class="violation-count">${violations}</td><td><div class="button-row"><button class="icon-btn" data-edit="${participant.nis}" title="Edit data" aria-label="Edit ${participant.name}">${ICON_EDIT}</button><button class="icon-btn" data-reset="${participant.nis}" title="Reset login" aria-label="Reset login ${participant.name}">${ICON_RESET}</button><button class="icon-btn icon-danger" data-delete="${participant.nis}" title="Hapus peserta" aria-label="Hapus ${participant.name}">${ICON_DELETE}</button></div></td></tr>`;
+                return `<tr><td data-label="No.">${currentPage * getPerPage() + index + 1}</td><td data-label="Nama"><strong>${participant.name}</strong></td><td data-label="NIS">${participant.nis}</td><td data-label="Status"><span class="status ${statusClass}">${status}</span></td><td data-label="Keluar Fullscreen" class="violation-count">${fullscreenViolations}</td><td data-label="Total Pelanggaran" class="violation-count">${violations}</td><td data-label="Aksi"><div class="button-row"><button class="icon-btn" data-edit="${participant.nis}" title="Edit data" aria-label="Edit ${participant.name}">${ICON_EDIT}</button><button class="icon-btn" data-reset="${participant.nis}" title="Reset login" aria-label="Reset login ${participant.name}">${ICON_RESET}</button><button class="icon-btn icon-danger" data-delete="${participant.nis}" title="Hapus peserta" aria-label="Hapus ${participant.name}">${ICON_DELETE}</button></div></td></tr>`;
             }).join('')}</tbody></table></div>`;
         }
 
@@ -422,7 +430,7 @@
                 const score = participant.lastScore;
                 const grade = score !== undefined ? gradeLabel(score) : '-';
                 const gradeClass = score !== undefined && score < 75 ? 'blocked' : 'done';
-                return `<tr><td>${recapCurrentPage * perPage + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td>${waktuRekapMarkup(participant)}</td><td class="score">${score !== undefined ? `${score}%` : '-'}</td><td><span class="status ${gradeClass}">${grade}</span></td></tr>`;
+                return `<tr><td data-label="No">${recapCurrentPage * perPage + index + 1}</td><td data-label="Nama"><strong>${participant.name}</strong></td><td data-label="NIS">${participant.nis}</td><td data-label="Status"><span class="status ${statusClass}">${status}</span></td><td data-label="Waktu">${waktuRekapMarkup(participant)}</td><td data-label="Nilai" class="score">${score !== undefined ? `${score}%` : '-'}</td><td data-label="Predikat"><span class="status ${gradeClass}">${grade}</span></td></tr>`;
             }).join('');
             return `<div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Status</th><th>Waktu</th><th>Nilai</th><th>Predikat</th></tr></thead><tbody>${rows}</tbody></table></div>`;
         }
@@ -791,6 +799,10 @@
             const file = document.getElementById('participantFileInput').files[0];
             if (!file) { alert('Pilih file CSV terlebih dahulu.'); return; }
             importParticipants(file);
+        });
+        document.getElementById('participantFileInput').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            document.getElementById('uploadFileName').textContent = file ? file.name : 'Belum ada file';
         });
         document.getElementById('clearViolationsBtn').addEventListener('click', async () => {
             try {
