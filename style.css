@@ -1184,7 +1184,7 @@ td .button-row {
 }
 
 .menu-toggle {
-    display: inline-flex;
+    display: none;
     width: 40px;
     height: 40px;
     border-radius: 10px;
@@ -1257,8 +1257,8 @@ td .button-row {
     align-items: center;
     justify-content: space-between;
     gap: 18px;
-    margin: 0 calc(clamp(20px, 4vw, 56px) * -1) 26px;
-    padding: 20px clamp(20px, 4vw, 56px);
+    margin: 0 calc(clamp(20px, 4vw, 56px) * -1) 0;
+    padding: 18px clamp(20px, 4vw, 56px) 16px;
     background: var(--surface-glass);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -1288,10 +1288,21 @@ td .button-row {
     margin: 0 0 14px;
 }
 
-.topbar h2 {
-    font-size: clamp(24px, 3vw, 32px);
-    margin: 7px 0 0;
+.topbar .eyebrow {
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.page-heading {
+    padding: 22px 0 6px;
+}
+
+.page-heading h2 {
+    font-size: clamp(22px, 2.6vw, 30px);
+    line-height: 1.25;
     color: var(--text);
+    font-weight: 800;
 }
 
 .topbar-left {
@@ -3312,11 +3323,14 @@ footer span.heart {
     }
 
     .topbar {
-        margin: 0 -15px 20px;
-        padding: 18px 15px;
+        margin: 0 -15px 0;
+        padding: 14px 15px;
     }
 
-    .topbar,
+    .page-heading {
+        padding: 16px 0 4px;
+    }
+
     .section-heading {
         align-items: flex-start;
         flex-direction: column;
@@ -3328,10 +3342,6 @@ footer span.heart {
 
     .content-card {
         padding: 17px;
-    }
-
-    .admin-menu {
-        align-self: flex-end;
     }
 }
 
