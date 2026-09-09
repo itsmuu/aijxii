@@ -1258,7 +1258,7 @@ td .button-row {
     justify-content: space-between;
     gap: clamp(12px, 3vw, 24px);
     margin: 0 calc(clamp(20px, 4vw, 56px) * -1) 0;
-    padding: clamp(12px, 2vw, 16px) clamp(20px, 4vw, 56px);
+    padding: clamp(8px, 1.4vw, 12px) clamp(20px, 4vw, 56px);
     background: var(--surface-glass);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -1322,7 +1322,7 @@ td .button-row {
     gap: 10px;
     border: 0;
     background: transparent;
-    padding: 8px 10px;
+    padding: 6px 10px;
     border-radius: 12px;
     cursor: pointer;
     color: var(--muted);
@@ -1352,8 +1352,8 @@ td .button-row {
 }
 
 .avatar {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 12px;
     display: grid;
     place-items: center;
