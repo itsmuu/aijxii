@@ -381,11 +381,14 @@
 
         function tableMarkup(participants) {
             if (!participants.length) return '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada peserta.</div>';
-return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>NIS</th><th>Status</th><th>Keluar Fullscreen</th><th>Total Pelanggaran</th><th>Aksi</th></tr></thead><tbody>${participants.map((participant, index) => {
+return `<div class="table-wrap"><table><thead><tr><th>No.</th><th>Nama</th><th>NIS</th><th>Status</th><th>Pelanggaran</th><th>Aksi</th></tr></thead><tbody>${participants.map((participant, index) => {
                 const [status, statusClass] = participantStatus(participant);
                 const violations = participant.cheatEvents?.length || 0;
                 const fullscreenViolations = participant.fullscreenExitCount ?? (participant.cheatEvents || []).filter((event) => String(event.reason || '').toLowerCase().includes('fullscreen')).length;
-                return `<tr><td data-label="No.">${currentPage * getPerPage() + index + 1}</td><td data-label="Nama"><strong>${participant.name}</strong></td><td data-label="NIS">${participant.nis}</td><td data-label="Status"><span class="status ${statusClass}">${status}</span></td><td data-label="Keluar Fullscreen" class="violation-count">${fullscreenViolations}</td><td data-label="Total Pelanggaran" class="violation-count">${violations}</td><td data-label="Aksi"><div class="button-row"><button class="icon-btn" data-edit="${participant.nis}" title="Edit data" aria-label="Edit ${participant.name}">${ICON_EDIT}</button><button class="icon-btn" data-reset="${participant.nis}" title="Reset login" aria-label="Reset login ${participant.name}">${ICON_RESET}</button><button class="icon-btn icon-danger" data-delete="${participant.nis}" title="Hapus peserta" aria-label="Hapus ${participant.name}">${ICON_DELETE}</button></div></td></tr>`;
+                const violationCell = violations === 0
+                    ? '<span class="viol-none">0</span>'
+                    : `<span class="viol-count">${violations}</span>${fullscreenViolations > 0 ? `<span class="viol-fs" title="${fullscreenViolations} keluar fullscreen">${fullscreenViolations} FS</span>` : ''}`;
+                return `<tr><td data-label="No.">${currentPage * getPerPage() + index + 1}</td><td data-label="Nama"><strong>${participant.name}</strong></td><td data-label="NIS">${participant.nis}</td><td data-label="Status"><span class="status ${statusClass}">${status}</span></td><td data-label="Pelanggaran" class="violation-col">${violationCell}</td><td data-label="Aksi"><div class="button-row"><button class="icon-btn" data-edit="${participant.nis}" title="Edit data" aria-label="Edit ${participant.name}">${ICON_EDIT}</button><button class="icon-btn" data-reset="${participant.nis}" title="Reset login" aria-label="Reset login ${participant.name}">${ICON_RESET}</button><button class="icon-btn icon-danger" data-delete="${participant.nis}" title="Hapus peserta" aria-label="Hapus ${participant.name}">${ICON_DELETE}</button></div></td></tr>`;
             }).join('')}</tbody></table></div>`;
         }
 
