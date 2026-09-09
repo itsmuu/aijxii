@@ -1256,9 +1256,9 @@ td .button-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
+    gap: clamp(12px, 3vw, 24px);
     margin: 0 calc(clamp(20px, 4vw, 56px) * -1) 0;
-    padding: 18px clamp(20px, 4vw, 56px) 16px;
+    padding: clamp(12px, 2vw, 16px) clamp(20px, 4vw, 56px);
     background: var(--surface-glass);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -1288,27 +1288,33 @@ td .button-row {
     margin: 0 0 14px;
 }
 
-.topbar .eyebrow {
-    font-size: 15px;
-    letter-spacing: 0.05em;
-    margin: 0;
-}
-
-.page-heading {
-    padding: 22px 0 6px;
-}
-
-.page-heading h2 {
-    font-size: clamp(22px, 2.6vw, 30px);
-    line-height: 1.25;
-    color: var(--text);
+.topbar-title {
+    font-size: clamp(15px, 2vw, 18px);
     font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.topbar-title::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 10px;
+    vertical-align: middle;
 }
 
 .topbar-left {
     display: flex;
     align-items: center;
     gap: 14px;
+    min-width: 0;
 }
 
 .admin-menu {
@@ -3324,11 +3330,7 @@ footer span.heart {
 
     .topbar {
         margin: 0 -15px 0;
-        padding: 14px 15px;
-    }
-
-    .page-heading {
-        padding: 16px 0 4px;
+        padding: clamp(10px, 2.5vw, 14px) 15px;
     }
 
     .section-heading {
