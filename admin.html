@@ -118,6 +118,14 @@
         .search-box .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
         .search-box input { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px 11px 40px; color: var(--ink); outline: 0; font: inherit; }
         .search-box input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,105,170,.12); }
+        .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 24px 0 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fbfdff; }
+        .table-toolbar .search-box { margin-bottom: 0; flex: 1 1 260px; max-width: 400px; }
+        .filter-select-wrap { display: inline-flex; align-items: center; gap: 10px; }
+        @media (max-width: 640px) {
+            .table-toolbar { flex-direction: column; align-items: stretch; }
+            .table-toolbar .search-box { max-width: none; }
+            .filter-select-wrap { justify-content: space-between; }
+        }
         .pagination { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
         .pagination-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .pagination-info { font-size: 13px; font-weight: 600; color: var(--muted); }
@@ -134,9 +142,18 @@
         th { background: #f5f8fc; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
         tr:last-child td { border-bottom: 0; }
         .status { display: inline-flex; border-radius: 999px; padding: 5px 9px; font-size: 11px; font-weight: 700; }
+        .status.pending { background: #eef1f5; color: var(--muted); }
+        .status.progress { background: var(--blue-soft); color: var(--blue); }
         .status.done { background: #e6f6ee; color: var(--success); }
-        .status.waiting { background: #fff6e5; color: #a96b00; }
         .status.blocked { background: #fff1f1; color: var(--danger); }
+        .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+        .filter-label { color: var(--muted); font-size: 12px; font-weight: 700; }
+        .filter-select { border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px; color: var(--ink); background: #fff; font: inherit; outline: 0; }
+        .filter-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23, 105, 170, .12); }
+        .waktu-cell { display: flex; flex-direction: column; gap: 2px; font-size: 11px; line-height: 1.5; white-space: nowrap; }
+        .waktu-cell .waktu-muted { color: var(--muted); }
+        .waktu-timer { font-size: 14px; font-weight: 800; color: var(--blue); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+        .waktu-timer.warning { color: var(--danger); }
         .score { color: var(--blue); font-weight: 800; }
         .violation-count { color: var(--danger); font-weight: 800; }
         .violation-list { display: grid; gap: 10px; }
@@ -327,14 +344,26 @@
             <section id="participantsView" class="view">
                 <div class="content-card">
                     <div class="section-heading"><div><h3>Data peserta ujian</h3><p>Tambahkan peserta, import CSV, dan reset akses login bila diperlukan.</p></div><div class="button-row"><button class="danger" id="resetAllBtn">Reset Semua Login</button></div></div>
-                    <div class="search-box">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input id="searchInput" type="text" placeholder="Cari nama siswa atau NIS..." autocomplete="off">
-                    </div>
                     <form id="addParticipantForm" class="form-grid"><div class="field"><label for="nameInput">Nama peserta</label><input id="nameInput" type="text" placeholder="Contoh: Andi Prasetyo" required></div><div class="field"><label for="nisInput">NIS</label><input id="nisInput" type="text" inputmode="numeric" placeholder="Contoh: 2024001" required></div><button class="primary" type="submit">Tambah Peserta</button></form>
                     <div class="section-heading" style="margin-top: 28px; margin-bottom: 10px;"><div><h3>Upload daftar peserta</h3><p>Gunakan CSV dengan kolom <strong>nama</strong> dan <strong>nis</strong>. Baris pertama dapat berisi header.</p></div></div>
                     <div class="button-row"><input id="participantFileInput" type="file" accept=".csv,text/csv" style="max-width: 260px; padding: 10px; border: 1px solid var(--line); border-radius: 9px;"><button class="primary" id="uploadParticipantsBtn" type="button">Import CSV</button><a class="outline" href="peserta-template.csv" download>Download Template</a></div>
-                    <div id="participantsTable" style="margin-top: 24px;"></div>
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input id="searchInput" type="text" placeholder="Cari nama siswa atau NIS..." autocomplete="off">
+                        </div>
+                        <div class="filter-select-wrap">
+                            <label class="filter-label" for="participantStatusFilter">Status peserta</label>
+                            <select id="participantStatusFilter" class="filter-select" aria-label="Filter status peserta">
+                                <option value="all">Semua status</option>
+                                <option value="pending">Belum mulai</option>
+                                <option value="progress">Sedang ujian</option>
+                                <option value="done">Selesai</option>
+                                <option value="blocked">Diblokir</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="participantsTable"></div>
                 </div>
             </section>
 
@@ -342,6 +371,16 @@
                 <div class="content-card">
                     <div class="section-heading"><div><h3>Rekap nilai ujian</h3><p>Ringkasan nilai akhir semua peserta STS MikroTik.</p></div><div class="button-row"><button class="primary" id="exportBtn">Export Nilai CSV</button></div></div>
                     <div id="recapChips" class="recap-chips"></div>
+                    <div class="filter-bar" style="margin-top: 18px;">
+                        <label class="filter-label" for="recapStatusFilter">Filter status</label>
+                        <select id="recapStatusFilter" class="filter-select" aria-label="Filter status rekap">
+                            <option value="all">Semua status</option>
+                            <option value="pending">Belum mulai</option>
+                            <option value="progress">Sedang ujian</option>
+                            <option value="done">Selesai</option>
+                            <option value="blocked">Diblokir</option>
+                        </select>
+                    </div>
                     <div id="recapTable" style="margin-top: 20px;"></div>
                     <div id="recapPagination"></div>
                 </div>
@@ -358,18 +397,22 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbwGZboLzpJSjP0vUyXaKMSUibDgFjzaoXAm6cCY_SEI71s0xq2ZCUdRxdxJcPBZKMHs/exec';
         const ADMIN_SESSION_KEY = 'mikrotikAdminAuthenticated';
         const ANSWERS = ['b','a','b','c','b','b','a','b','d','a','a','a','a','b','a','b','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a'];
+        const EXAM_DURATION_MINUTES = 30;
         let pageSize = 10;
         let currentPage = 0;
         let searchQuery = '';
+        let participantStatusFilter = 'all';
         let recapPageSize = 10;
         let recapCurrentPage = 0;
+        let recapStatusFilter = 'all';
 
         function filteredParticipants() {
             const keyword = String(searchQuery || '').trim().toLowerCase();
-            if (!keyword) return getParticipants();
-            return getParticipants().filter((participant) =>
-                (String(participant.name) + ' ' + String(participant.nis)).toLowerCase().includes(keyword)
-            );
+            return getParticipants().filter((participant) => {
+                const matchesKeyword = !keyword || (String(participant.name) + ' ' + String(participant.nis)).toLowerCase().includes(keyword);
+                const matchesStatus = participantStatusFilter === 'all' || participantStatus(participant)[1] === participantStatusFilter;
+                return matchesKeyword && matchesStatus;
+            });
         }
 
         function getPerPage() {
@@ -458,9 +501,53 @@
 
         function participantStatus(participant) {
             if (participant.blocked) return ['Diblokir', 'blocked'];
-            if (participant.loggedIn) return ['Sedang ujian', 'waiting'];
+            if (participant.loggedIn) return ['Sedang ujian', 'progress'];
             if (participant.lastScore !== undefined) return ['Selesai', 'done'];
-            return ['Belum mulai', 'waiting'];
+            return ['Belum mulai', 'pending'];
+        }
+
+        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+        function formatWaktu(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (isNaN(date.getTime())) return '-';
+            const pad = (number) => String(number).padStart(2, '0');
+            return `${pad(date.getDate())} ${MONTHS[date.getMonth()]} ${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        function durasiUjian(participant) {
+            if (!participant.startedAt || !participant.completedAt) return null;
+            const start = new Date(participant.startedAt).getTime();
+            const end = new Date(participant.completedAt).getTime();
+            if (isNaN(start) || isNaN(end) || end < start) return null;
+            return Math.round((end - start) / 60000);
+        }
+
+        function waktuRekapMarkup(participant) {
+            const [status] = participantStatus(participant);
+            if (status === 'Selesai') {
+                const durasi = durasiUjian(participant);
+                return `<div class="waktu-cell"><span>Selesai: ${formatWaktu(participant.completedAt)}</span><span>Durasi: ${durasi !== null ? durasi : '-'} mnt</span></div>`;
+            }
+            if (status === 'Sedang ujian' && participant.startedAt) {
+                const endsAt = new Date(participant.startedAt).getTime() + EXAM_DURATION_MINUTES * 60 * 1000;
+                const remaining = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
+                const pad = (number) => String(number).padStart(2, '0');
+                return `<div class="waktu-cell"><span class="waktu-timer" data-countdown="${endsAt}">${pad(Math.floor(remaining / 60))}:${pad(remaining % 60)}</span><span class="waktu-muted">Sisa waktu</span></div>`;
+            }
+            return '<div class="waktu-cell"><span class="waktu-muted">-</span></div>';
+        }
+
+        function tickCountdowns() {
+            document.querySelectorAll('[data-countdown]').forEach((element) => {
+                const endsAt = Number(element.dataset.countdown);
+                const remaining = Math.max(0, endsAt - Date.now());
+                const totalSeconds = Math.floor(remaining / 1000);
+                const pad = (number) => String(number).padStart(2, '0');
+                element.textContent = `${pad(Math.floor(totalSeconds / 60))}:${pad(totalSeconds % 60)}`;
+                element.classList.toggle('warning', totalSeconds <= 60);
+            });
         }
 
         function tableMarkup(participants) {
@@ -519,7 +606,7 @@
         }
 
         function recapList() {
-            const participants = [...getParticipants()];
+            const participants = getParticipants().filter((participant) => recapStatusFilter === 'all' || participantStatus(participant)[1] === recapStatusFilter);
             participants.sort((first, second) => {
                 const hasFirst = first.lastScore !== undefined;
                 const hasSecond = second.lastScore !== undefined;
@@ -541,14 +628,13 @@
             const pageItems = participants.slice(recapCurrentPage * perPage, (recapCurrentPage + 1) * perPage);
             if (!pageItems.length) return '<div style="padding: 24px; text-align: center; color: var(--muted);">Belum ada data peserta.</div>';
             const rows = pageItems.map((participant, index) => {
-                const status = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
-                const statusClass = participant.loggedIn ? 'waiting' : participant.lastScore !== undefined ? 'done' : 'waiting';
+                const [status, statusClass] = participantStatus(participant);
                 const score = participant.lastScore;
                 const grade = score !== undefined ? gradeLabel(score) : '-';
                 const gradeClass = score !== undefined && score < 60 ? 'blocked' : 'done';
-                return `<tr><td>${recapCurrentPage * perPage + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td class="score">${score !== undefined ? `${score}%` : '-'}</td><td><span class="status ${gradeClass}">${grade}</span></td></tr>`;
+                return `<tr><td>${recapCurrentPage * perPage + index + 1}</td><td><strong>${participant.name}</strong></td><td>${participant.nis}</td><td><span class="status ${statusClass}">${status}</span></td><td>${waktuRekapMarkup(participant)}</td><td class="score">${score !== undefined ? `${score}%` : '-'}</td><td><span class="status ${gradeClass}">${grade}</span></td></tr>`;
             }).join('');
-            return `<div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Status</th><th>Nilai</th><th>Predikat</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            return `<div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>NIS</th><th>Status</th><th>Waktu</th><th>Nilai</th><th>Predikat</th></tr></thead><tbody>${rows}</tbody></table></div>`;
         }
 
         function recapPaginationMarkup(totalPages) {
@@ -696,7 +782,7 @@
             const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
             const headers = ['No', 'Nama', 'NIS', 'Status', 'Nilai', 'Predikat'];
             const rows = recapList().map((participant, index) => {
-                const status = participant.loggedIn ? 'Sedang ujian' : participant.lastScore !== undefined ? 'Selesai' : 'Belum mulai';
+                const [status] = participantStatus(participant);
                 const score = participant.lastScore;
                 return [index + 1, participant.name, participant.nis, status, score !== undefined ? score : '', score !== undefined ? gradeLabel(score) : ''];
             });
@@ -824,6 +910,10 @@
             }
         }, 7000);
 
+        setInterval(() => {
+            if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true' && !adminApp.hidden) tickCountdowns();
+        }, 1000);
+
         const menuToggleBtn = document.getElementById('menuToggleBtn');
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const sidebarEl = document.querySelector('.sidebar');
@@ -882,6 +972,16 @@
             searchQuery = document.getElementById('searchInput').value;
             currentPage = 0;
             render();
+        });
+        document.getElementById('participantStatusFilter').addEventListener('change', (event) => {
+            participantStatusFilter = event.target.value;
+            currentPage = 0;
+            render();
+        });
+        document.getElementById('recapStatusFilter').addEventListener('change', (event) => {
+            recapStatusFilter = event.target.value;
+            recapCurrentPage = 0;
+            renderRecap();
         });
         document.getElementById('addParticipantForm').addEventListener('submit', async (event) => {
             event.preventDefault();
